@@ -583,6 +583,7 @@ class Brizy_Editor_Project implements Serializable {
 		$this->cloud_token = $cloud_token;
 	}
 
+
 	/**
 	 * @return mixed
 	 */
