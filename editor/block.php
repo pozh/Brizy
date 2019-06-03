@@ -33,6 +33,7 @@ class Brizy_Editor_Block extends Brizy_Editor_Post {
 	public static function get( $apost, $uid = null ) {
 
 		$wp_post_id = $apost;
+
 		if ( $apost instanceof WP_Post ) {
 			$wp_post_id = $apost->ID;
 		}
@@ -62,7 +63,7 @@ class Brizy_Editor_Block extends Brizy_Editor_Post {
 
 		if ( $uid ) {
 			$this->uid = $uid;
-			update_metadata( $this->get_wp_post()->post_type, $this->get_parent_id(),'brizy_post_uid', $this->uid );
+			update_metadata( 'post', $this->get_parent_id(),'brizy_post_uid', $this->uid );
 		} else {
 			$this->create_uid();
 		}
