@@ -1,5 +1,8 @@
 <?php
 
+use \Brizy\DataToProjectContext;
+use \Brizy\DataToProjectTransformer;
+
 class Brizy_Admin_Migrations_GlobalsToDataMigration implements Brizy_Admin_Migrations_MigrationInterface {
 
 	/**
@@ -34,8 +37,8 @@ class Brizy_Admin_Migrations_GlobalsToDataMigration implements Brizy_Admin_Migra
 				                      DIRECTORY_SEPARATOR . "public" .
 				                      DIRECTORY_SEPARATOR . "editor-build";
 
-				$context          = new \Brizy\DataToProjectContext( $beforeMergeGlobals, $editorBuildPath );
-				$projectMigration = new \Brizy\DataToProjectTransformer();
+				$context          = new DataToProjectContext( $beforeMergeGlobals, $editorBuildPath );
+				$projectMigration = new DataToProjectTransformer();
 				$mergedGlobals    = $projectMigration->execute( $context );
 				$storage->set( 'data', base64_encode( json_encode( $mergedGlobals ) ) );
 				$storage->delete( 'globals' );
