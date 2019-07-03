@@ -271,11 +271,8 @@ class Brizy_Admin_Blocks_Api extends Brizy_Admin_AbstractApi {
 
 		$this->verifyNonce( self::nonce );
 
-		$data = file_get_contents( "php://input" );
 
-		$dataObject = json_decode( $data );
-
-		if ( ! $dataObject || !$dataObject->blocks ) {
+		if (  !$this->param('blocks') ) {
 			$this->error( 400, 'Invalid position data provided' );
 		}
 
@@ -283,7 +280,11 @@ class Brizy_Admin_Blocks_Api extends Brizy_Admin_AbstractApi {
 
 		try {
 
-			foreach ( get_object_vars( $dataObject->blocks ) as $uid => $position ) {
+			$blocks = $this->param('blocks');
+
+			foreach ( $blocks as $uid => $position ) {
+
+				$position = (object)$position;
 
 				if ( ! ( isset( $position->top ) && isset( $position->bottom ) && isset( $position->align ) ) ) {
 					throw  new Exception();
@@ -298,7 +299,7 @@ class Brizy_Admin_Blocks_Api extends Brizy_Admin_AbstractApi {
 				}
 
 				$block->setPosition( $positionObj );
-				if ( isset( $dataObject->is_autosave ) && $dataObject->is_autosave == 1 ) {
+				if ( $this->param('is_autosave') == 1 ) {
 					$block->auto_save_post();
 				} else {
 					$block->save();
@@ -315,7 +316,7 @@ class Brizy_Admin_Blocks_Api extends Brizy_Admin_AbstractApi {
 			$this->error( '400', 'Unable to save block positions' );
 		}
 
-		$this->success( '200', json_encode( $dataObject ) );
+		$this->success( '200', json_encode( $blocks ) );
 	}
 
 
