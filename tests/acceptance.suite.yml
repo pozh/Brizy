@@ -9,7 +9,7 @@ actor: AcceptanceTester
 modules:
     enabled:
         - WPDb
-        - WPBrowser
+        - WPWebDriver
         - REST
         - \Helper\Acceptance
     config:
@@ -31,6 +31,18 @@ modules:
             adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
             adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
             adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
+        WPWebDriver:
+            url: '%TEST_SITE_WP_URL%'
+            browser: chromium
+            port: 9515
+            window_size: false
+            capabilities:
+                chromeOptions:
+                    args: ["--headless", "--disable-gpu", "window-size=1920x1080","w3c=true"]
+            adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
+            adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
+            adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
+
         REST:
             depends: WPBrowser
             url: '%TEST_SITE_WP_URL%/wp-admin/'
