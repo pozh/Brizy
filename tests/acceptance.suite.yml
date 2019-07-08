@@ -10,8 +10,8 @@ modules:
     enabled:
         - WPDb
         - WPWebDriver
-        - REST
         - \Helper\Acceptance
+        - WPFilesystem
     config:
         WPDb:
             dsn: 'mysql:host=%TEST_SITE_DB_HOST%;dbname=%TEST_SITE_DB_NAME%'
@@ -19,9 +19,9 @@ modules:
             password: '%TEST_SITE_DB_PASSWORD%'
             dump: 'tests/_data/dump.sql'
             #import the dump before the tests; this means the test site database will be repopulated before the tests.
-            populate: true 
+            populate: true
             # re-import the dump between tests; this means the test site database will be repopulated between the tests.
-            cleanup: true 
+            cleanup: true
             waitlock: 10
             url: '%TEST_SITE_WP_URL%'
             urlReplacement: true #replace the hardcoded dump URL with the one above
@@ -33,16 +33,21 @@ modules:
             adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
         WPWebDriver:
             url: '%TEST_SITE_WP_URL%'
-            browser: chromium
+            browser: chrome
             port: 9515
+            wait: 5
             window_size: false
             capabilities:
                 chromeOptions:
-                    args: ["--headless", "--disable-gpu", "window-size=1920x1080","w3c=true"]
+                    args: ["--headless", "--disable-gpu", "window-size=1920x1080","--user-agent=wp-browser"]
+                    binary: /usr/bin/google-chrome
             adminUsername: '%TEST_SITE_ADMIN_USERNAME%'
             adminPassword: '%TEST_SITE_ADMIN_PASSWORD%'
             adminPath: '%TEST_SITE_WP_ADMIN_PATH%'
 
-        REST:
-            depends: WPBrowser
-            url: '%TEST_SITE_WP_URL%/wp-admin/'
+#        REST:
+#            depends: WPBrowser
+#            url: '%TEST_SITE_WP_URL%/wp-admin/'
+
+        WPFilesystem:
+            wpRootFolder: "%WP_ROOT_FOLDER%"
