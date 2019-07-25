@@ -29,7 +29,7 @@ class Brizy_Admin_Popups_Main {
 	 */
 	public function __construct() {
 		add_action( 'wp_loaded', array( $this, 'initializeActions' ) );
-		add_filter( 'brizy_global_data', array( $this, 'populateGlobalData' ) );
+		//add_filter( 'brizy_global_data', array( $this, 'populateGlobalData' ) );
 		add_filter( 'brizy_supported_post_types', array( $this, 'populateSupportedPosts' ) );
 	}
 
@@ -47,50 +47,50 @@ class Brizy_Admin_Popups_Main {
 	 * @return mixed
 	 * @throws Brizy_Editor_Exceptions_NotFound
 	 */
-	public function populateGlobalData( $globalData ) {
-
-		if ( ! is_object( $globalData ) ) {
-			$globalData = (object) array( 'globalBlocks' => array(), 'savedBlocks' => array() );
-		}
-
-		$blocks = get_posts( array(
-			'post_type'      => Brizy_Admin_Popups_Main::CP_GLOBAL,
-			'posts_per_page' => - 1,
-			'post_status'    => 'publish',
-			'orderby'        => 'ID',
-			'order'          => 'ASC',
-		) );
-
-		foreach ( $blocks as $block ) {
-			$brizy_editor_block               = Brizy_Editor_Block::get( $block );
-			$uid                              = $brizy_editor_block->get_uid();
-			$block_data                       = $brizy_editor_block->convertToOptionValue();
-			$globalData->globalBlocks[ $uid ] = array(
-				'data'     => json_decode( $brizy_editor_block->get_editor_data() ),
-				'position' => $block_data['position'],
-				'rules'    => $block_data['rules']
-			);
-		}
-
-		$blocks = get_posts( array(
-			'post_type'      => Brizy_Admin_Popups_Main::CP_SAVED,
-			'posts_per_page' => - 1,
-			'post_status'    => 'publish',
-			'orderby'        => 'ID',
-			'order'          => 'ASC',
-		) );
-
-		foreach ( $blocks as $block ) {
-			$brizy_editor_block        = Brizy_Editor_Block::get( $block );
-			$block_data                       = $brizy_editor_block->convertToOptionValue();
-			$globalData->savedBlocks[] = array(
-				'data' => json_decode( $brizy_editor_block->get_editor_data() ),
-				'rules'    => $block_data['rules']
-			);
-		}
-
-		return $globalData;
-	}
+//	public function populateGlobalData( $globalData ) {
+//
+//		if ( ! is_object( $globalData ) ) {
+//			$globalData = (object) array( 'globalBlocks' => array(), 'savedBlocks' => array() );
+//		}
+//
+//		$blocks = get_posts( array(
+//			'post_type'      => Brizy_Admin_Popups_Main::CP_GLOBAL,
+//			'posts_per_page' => - 1,
+//			'post_status'    => 'publish',
+//			'orderby'        => 'ID',
+//			'order'          => 'ASC',
+//		) );
+//
+//		foreach ( $blocks as $block ) {
+//			$brizy_editor_block               = Brizy_Editor_Block::get( $block );
+//			$uid                              = $brizy_editor_block->get_uid();
+//			$block_data                       = $brizy_editor_block->convertToOptionValue();
+//			$globalData->globalBlocks[ $uid ] = array(
+//				'data'     => json_decode( $brizy_editor_block->get_editor_data() ),
+//				'position' => $block_data['position'],
+//				'rules'    => $block_data['rules']
+//			);
+//		}
+//
+//		$blocks = get_posts( array(
+//			'post_type'      => Brizy_Admin_Popups_Main::CP_SAVED,
+//			'posts_per_page' => - 1,
+//			'post_status'    => 'publish',
+//			'orderby'        => 'ID',
+//			'order'          => 'ASC',
+//		) );
+//
+//		foreach ( $blocks as $block ) {
+//			$brizy_editor_block        = Brizy_Editor_Block::get( $block );
+//			$block_data                       = $brizy_editor_block->convertToOptionValue();
+//			$globalData->savedBlocks[] = array(
+//				'data' => json_decode( $brizy_editor_block->get_editor_data() ),
+//				'rules'    => $block_data['rules']
+//			);
+//		}
+//
+//		return $globalData;
+//	}
 
 	/**
 	 *
