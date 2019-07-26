@@ -1,33 +1,28 @@
-# Codeception Test Suite Configuration
-#
-# Suite for unit or integration tests that require WordPress functions and classes.
-
-actor: WpunitTester
+actor: FunctionalTester
 modules:
   enabled:
+    - \Helper\Integration
+    - \Helper\Functional
     - Asserts
     - WPDb
     - WPLoader
-    - \Helper\Unit
-    - \Helper\Wpunit
-    - \Helper\Integration
+    - WPFilesystem
   config:
     WPDb:
-      dsn: 'mysql:host=%TEST_SITE_DB_HOST%;dbname=%TEST_SITE_DB_NAME%'
+      dsn: 'mysql:host=%TEST_SITE_DB_HOST%;dbname=%TEST_SITE_DB_NAME%;port=3307'
       user: '%TEST_SITE_DB_USER%'
       password: '%TEST_SITE_DB_PASSWORD%'
       dump: 'tests/_data/dump-active-brizy.sql'
       reconect: true
       populate: true
-      cleanup: false
+      cleanup: true
       waitlock: 10
       url: '%TEST_SITE_WP_URL%'
       urlReplacement: true
       tablePrefix: '%TEST_SITE_TABLE_PREFIX%'
     WPLoader:
+      loadOnly: true
       wpRootFolder: "%WP_ROOT_FOLDER%"
-      isolatedInstall: true
-      domain: "%TEST_SITE_WP_DOMAIN%"
       dbName: "%TEST_SITE_DB_NAME%"
       dbHost: "%TEST_SITE_DB_HOST%"
       dbUser: "%TEST_SITE_DB_USER%"
@@ -36,3 +31,5 @@ modules:
       wpDebug: true
       plugins: ['brizy/brizy.php']
       activatePlugins: ['brizy/brizy.php']
+    WPFilesystem:
+      wpRootFolder: "%WP_ROOT_FOLDER%"

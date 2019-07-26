@@ -8,6 +8,7 @@ class BlockTest extends \Codeception\Test\Unit {
 	protected $tester;
 
 	protected function _before() {
+		wp_cache_flush();
 	}
 
 	protected function _after() {
@@ -38,6 +39,9 @@ class BlockTest extends \Codeception\Test\Unit {
 		$this->assertEquals( $data_decoded, $block->get_editor_data(), "It should return decoded data" );
 		$this->assertEquals( "1", $block->get_compiler_version() );
 		$this->assertEquals( "2", $block->get_editor_version() );
+
+
+
 	}
 
 	/**
@@ -48,7 +52,7 @@ class BlockTest extends \Codeception\Test\Unit {
 		$data         = base64_encode( 'test' );
 		$data_decoded = 'test';
 
-		echo $id = wp_insert_post( [ 'post_type' => Brizy_Admin_Blocks_Main::CP_GLOBAL, 'post_title' => 'Test 2' ] );
+		$id = wp_insert_post( [ 'post_type' => Brizy_Admin_Blocks_Main::CP_GLOBAL, 'post_title' => 'Test 2' ] );
 
 		$block = new Brizy_Editor_Block( $id );
 		$block->setPosition( new Brizy_Editor_BlockPosition( "left", 1 ) );

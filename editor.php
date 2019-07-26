@@ -268,7 +268,6 @@ class Brizy_Editor {
 		}
 	}
 
-
 	public function wordpressObjectCreated() {
 		$pid  = Brizy_Editor::get()->currentPostId();
 		$post = null;
@@ -287,7 +286,6 @@ class Brizy_Editor {
 			$this->handleFrontEndEditor( $post );
 		}
 	}
-
 
 	private function loadShortcodes() {
 		$a = new Brizy_Shortcode_Sidebar();
@@ -312,7 +310,6 @@ class Brizy_Editor {
 
 	public function brizy_settings_header() {
 		$params = array();
-
 
 		$context = array(
 			'site_settings'  => array(
