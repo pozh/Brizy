@@ -51,6 +51,7 @@ const DEFAULT = {
     }
   },
   font: null,
+  fontType: "google",
   fontStyle: null,
   height: 1.6,
   horizontalAlign: "left",

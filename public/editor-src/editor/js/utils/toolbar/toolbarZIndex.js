@@ -1,11 +1,12 @@
 import { t } from "visual/utils/i18n";
 
-export function toolbarZIndex({ v, position = 20 }) {
+export function toolbarZIndex({ v, position = 20, devices = "desktop" }) {
   return {
     type: "slider",
     id: "zIndex",
     position,
     label: t("Z-index"),
+    devices,
     slider: {
       min: 0,
       max: 100

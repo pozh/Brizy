@@ -61,11 +61,18 @@ export function toolbarSizeWidthWidthPercent({ v, device, state }) {
   };
 }
 
-export function toolbarSizeHeightHeightPx({ v, device, state, config }) {
+export function toolbarSizeHeightHeightPx({
+  v,
+  device,
+  state,
+  config,
+  devices = "all"
+}) {
   return {
     id: defaultValueKey({ key: "height", device, state }),
     label: t("Height"),
     type: "slider",
+    devices,
     slider: {
       min: config.slider.min,
       max: config.slider.max

@@ -1,0 +1,17 @@
+// Badges
+.brz-ed-badge {
+  font-family: $font-family-1;
+  font-size: 9px;
+  font-weight: 600;
+  color: #fff;
+  background-color: $brand-primary;
+  border-radius: 4px;
+  text-transform: uppercase;
+  display: inline-block;
+  line-height: 1;
+  padding: 4px 5px;
+
+  &--pro {
+    background-color: $brand-primary-pro;
+  }
+}

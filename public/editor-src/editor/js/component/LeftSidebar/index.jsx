@@ -55,10 +55,10 @@ class LeftSidebar extends React.Component {
         typeof item.iconProps === "object"
           ? item.iconProps
           : typeof item.iconProps === "function"
-            ? item.iconProps({
-                activeClass: "brz-ed-sidebar__control__item--active"
-              })
-            : {};
+          ? item.iconProps({
+              activeClass: "brz-ed-sidebar__control__item--active"
+            })
+          : {};
 
       return (
         <Icon
@@ -75,9 +75,7 @@ class LeftSidebar extends React.Component {
 
   render() {
     const { drawerContentType } = this.props;
-
     const topIcons = this.renderIcons(items.top);
-
     const showDrawer = Boolean(drawerContentType && !this.deviceModeChanged);
     let drawerTitle = "";
     let drawerContent = null;

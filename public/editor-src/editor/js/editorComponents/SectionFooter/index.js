@@ -1,12 +1,14 @@
 import React from "react";
 import EditorComponent from "visual/editorComponents/EditorComponent";
 import CustomCSS from "visual/component/CustomCSS";
+import classnames from "classnames";
 import SectionFooterItems from "./Items";
 import Background from "visual/component/Background";
 import ContainerBorder from "visual/component/ContainerBorder";
 import PaddingResizer from "visual/component/PaddingResizer";
 import { Roles } from "visual/component/Roles";
 import { uuid } from "visual/utils/uuid";
+import { stripIds } from "visual/utils/models";
 import { tabletSyncOnChange, mobileSyncOnChange } from "visual/utils/onChange";
 import {
   wInBoxedPage,
@@ -20,14 +22,12 @@ import { globalBlocksSelector } from "visual/redux/selectors";
 import { CollapsibleToolbar } from "visual/component/Toolbar";
 import * as toolbarConfig from "./toolbar";
 import {
-  sectionStyleClassName,
-  bgStyleClassName,
-  bgStyleCSSVars,
-  itemsStyleClassName,
-  itemsStyleCSSVars,
-  containerStyleClassName,
-  containerStyleCSSVars
+  styleSection,
+  styleBg,
+  styleContainer,
+  styleContainerWrap
 } from "./styles";
+import { css } from "visual/utils/cssStyle";
 import defaultValue from "./defaultValue.json";
 
 class SectionFooter extends EditorComponent {
@@ -127,8 +127,9 @@ class SectionFooter extends EditorComponent {
     );
   }
 
-  renderItems(v) {
+  renderItems(v, vs) {
     const {
+      containerClassName,
       bgImageSrc,
       bgColorOpacity,
       bgPopulation,
@@ -138,8 +139,33 @@ class SectionFooter extends EditorComponent {
 
     const meta = this.getMeta(v);
 
+    const classNameBg = classnames(
+      css(
+        `${this.constructor.componentId}-bg`,
+        `${this.getId()}-bg`,
+        styleBg(vs, v)
+      )
+    );
+    const classNameContainer = classnames(
+      "brz-container",
+      containerClassName,
+      css(
+        `${this.constructor.componentId}-container`,
+        `${this.getId()}-container`,
+        styleContainer(vs, v)
+      )
+    );
+    const classNameContainerWrap = classnames(
+      "brz-container__wrap",
+      css(
+        `${this.constructor.componentId}-containerWrap`,
+        `${this.getId()}-containerWrap`,
+        styleContainerWrap(vs, v)
+      )
+    );
+
     const bgProps = {
-      className: bgStyleClassName(v),
+      className: classNameBg,
       imageSrc: bgImageSrc || bgPopulation,
       colorOpacity: bgColorOpacity,
       shapeTopType: shapeTopType !== "none" && shapeTopType,
@@ -152,14 +178,14 @@ class SectionFooter extends EditorComponent {
 
     const itemsProps = this.makeSubcomponentProps({
       bindWithKey: "items",
-      className: itemsStyleClassName(v),
+      className: classNameContainer,
       meta
     });
 
     return (
       <Background {...bgProps}>
         <PaddingResizer value={v} onChange={this.handlePaddingResizerChange}>
-          <div className={containerStyleClassName(v)}>
+          <div className={classNameContainerWrap}>
             <SectionFooterItems {...itemsProps} />
           </div>
         </PaddingResizer>
@@ -167,22 +193,31 @@ class SectionFooter extends EditorComponent {
     );
   }
 
-  renderForEdit(v) {
-    const styles = {
-      ...bgStyleCSSVars(v),
-      ...itemsStyleCSSVars(v),
-      ...containerStyleCSSVars(v)
-    };
+  renderForEdit(v, vs) {
+    const { className, customClassName } = v;
+
+    const classNameSection = classnames(
+      "brz-footer",
+      className,
+      customClassName,
+      css(
+        `${this.constructor.componentId}-section`,
+        `${this.getId()}-section`,
+        styleSection(vs, v)
+      )
+    );
 
     return (
       <CustomCSS selectorName={this.getId()} css={v.customCSS}>
         <footer
           id={this.getId()}
-          className={sectionStyleClassName(v)}
+          className={classNameSection}
           data-block-id={this.props.blockId}
-          style={styles}
         >
-          <Roles allow={["admin"]} fallbackRender={() => this.renderItems(v)}>
+          <Roles
+            allow={["admin"]}
+            fallbackRender={() => this.renderItems(v, vs)}
+          >
             <ContainerBorder
               ref={el => {
                 this.containerBorder = el;
@@ -194,7 +229,7 @@ class SectionFooter extends EditorComponent {
               path={this.getPath()}
             >
               {this.renderToolbar(v)}
-              {this.renderItems(v)}
+              {this.renderItems(v, vs)}
             </ContainerBorder>
           </Roles>
         </footer>
@@ -202,15 +237,28 @@ class SectionFooter extends EditorComponent {
     );
   }
 
-  renderForView(v) {
+  renderForView(v, vs) {
+    const { className, customClassName } = v;
+
+    const classNameSection = classnames(
+      "brz-footer",
+      className,
+      customClassName,
+      css(
+        `${this.constructor.componentId}-section`,
+        `${this.getId()}-section`,
+        styleSection(vs, v)
+      )
+    );
+
     return (
       <CustomCSS selectorName={this.getId()} css={v.customCSS}>
         <footer
           id={v.anchorName || this.getId()}
-          className={sectionStyleClassName(v)}
+          className={classNameSection}
           data-uid={this.getId()}
         >
-          {this.renderItems(v)}
+          {this.renderItems(v, vs)}
         </footer>
       </CustomCSS>
     );

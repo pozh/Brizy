@@ -9,6 +9,11 @@
     "popups": []
   },
 
+  "toolbar": {
+    "tabsState": "",
+    "tabsColor": ""
+  },
+
   "link": {
     "linkType": "external",
     "linkExternal": "",
@@ -33,7 +38,10 @@
     "largeIconSize": 32,
 
     "fontStyle": "button",
-    "fontFamily": "montserrat",
+    "fontFamilyType": "google",
+    "families": {
+      "fontFamily": "montserrat"
+    },
     "fontSize": 12,
     "fontWeight": 700,
     "lineHeight": 1.8,
@@ -117,8 +125,6 @@
     "tempHoverBorderColorOpacity": 0.8,
     "tempHoverBorderColorPalette": "color3",
 
-    "hoverTransition": 50,
-
     "size": "medium",
 
     "smallFontSize": 11,
@@ -184,6 +190,8 @@
 
     "boxShadow": "off",
 
+    "tempBoxShadow": "on",
+
     "boxShadowColorHex": "#000000",
     "boxShadowColorOpacity": 1,
     "boxShadowColorPalette": "",
@@ -203,6 +211,8 @@
 
     "hoverBoxShadow": null,
 
+    "tempHoverBoxShadow": null,
+
     "hoverBoxShadowColorHex": null,
     "hoverBoxShadowColorOpacity": null,
     "hoverBoxShadowColorPalette": null,
@@ -219,6 +229,8 @@
     "tempHoverBoxShadowSpread": null,
     "tempHoverBoxShadowVertical": null,
     "tempHoverBoxShadowHorizontal": null,
+
+    "hoverTransition": 50,
 
     "customCSS": "",
 

@@ -1,13 +1,37 @@
 import React from "react";
 import { currentUserRole } from "visual/component/Roles";
+import { getStore } from "visual/redux/store";
+import { deviceModeSelector } from "visual/redux/selectors";
 import Option from "./Option";
 
 export const filterOptionsData = data =>
-  data.filter(
-    ({ disabled, roles }) =>
-      disabled !== true &&
-      (!roles || (Array.isArray(roles) && roles.includes(currentUserRole())))
-  );
+  data.filter(({ type, disabled, devices, roles }) => {
+    if (!type) {
+      return false;
+    }
+
+    if (disabled === true) {
+      return false;
+    }
+
+    if (devices && devices !== "all") {
+      const deviceMode = deviceModeSelector(getStore().getState());
+
+      if (devices === "desktop" && deviceMode !== "desktop") {
+        return false;
+      }
+
+      if (devices === "responsive" && deviceMode === "desktop") {
+        return false;
+      }
+    }
+
+    if (Array.isArray(roles) && !roles.includes(currentUserRole())) {
+      return false;
+    }
+
+    return true;
+  });
 
 class Options extends React.Component {
   static defaultProps = {

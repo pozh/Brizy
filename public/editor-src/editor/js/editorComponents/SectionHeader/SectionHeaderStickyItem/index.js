@@ -1,4 +1,5 @@
 import React from "react";
+import classnames from "classnames";
 import EditorComponent from "visual/editorComponents/EditorComponent";
 import CustomCSS from "visual/component/CustomCSS";
 import SectionHeaderStickyItemItems from "./Items";
@@ -14,14 +15,8 @@ import {
 } from "visual/config/columns";
 import { CollapsibleToolbar } from "visual/component/Toolbar";
 import * as toolbarConfig from "./toolbar";
-import {
-  bgStyleClassName,
-  bgStyleCSSVars,
-  itemsStyleClassName,
-  itemsStyleCSSVars,
-  containerStyleClassName,
-  containerStyleCSSVars
-} from "./styles";
+import { styleBg, styleContainer, styleContainerWrap } from "./styles";
+import { css } from "visual/utils/cssStyle";
 import defaultValue from "./defaultValue.json";
 import { tabletSyncOnChange, mobileSyncOnChange } from "visual/utils/onChange";
 
@@ -124,8 +119,9 @@ class SectionHeaderStickyItem extends EditorComponent {
     );
   }
 
-  renderItems(v) {
+  renderItems(v, vs) {
     const {
+      containerClassName,
       bgImageSrc,
       bgColorOpacity,
       bgPopulation,
@@ -135,15 +131,33 @@ class SectionHeaderStickyItem extends EditorComponent {
 
     const meta = this.getMeta(v);
 
-    const styles = {
-      ...bgStyleCSSVars(v, this.props),
-      ...itemsStyleCSSVars(v),
-      ...containerStyleCSSVars(v)
-    };
+    const classNameBg = classnames(
+      css(
+        `${this.constructor.componentId}-bg`,
+        `${this.getId()}-bg`,
+        styleBg(vs, v)
+      )
+    );
+    const classNameContainer = classnames(
+      "brz-container",
+      containerClassName,
+      css(
+        `${this.constructor.componentId}-container`,
+        `${this.getId()}-container`,
+        styleContainer(vs, v)
+      )
+    );
+    const classNameContainerWrap = classnames(
+      "brz-container__wrap",
+      css(
+        `${this.constructor.componentId}-containerWrap`,
+        `${this.getId()}-containerWrap`,
+        styleContainerWrap(vs, v)
+      )
+    );
 
     let bgProps = {
-      className: bgStyleClassName(v, this.props),
-      style: styles,
+      className: classNameBg,
       imageSrc: bgImageSrc || bgPopulation,
       colorOpacity: bgColorOpacity,
       shapeTopType: shapeTopType !== "none" && shapeTopType,
@@ -156,14 +170,14 @@ class SectionHeaderStickyItem extends EditorComponent {
 
     const itemsProps = this.makeSubcomponentProps({
       bindWithKey: "items",
-      className: itemsStyleClassName(v),
+      className: classNameContainer,
       meta
     });
 
     return (
       <Background {...bgProps}>
         <PaddingResizer value={v} onChange={this.handlePaddingResizerChange}>
-          <div className={containerStyleClassName(v)}>
+          <div className={classNameContainerWrap}>
             <SectionHeaderStickyItemItems {...itemsProps} />
           </div>
         </PaddingResizer>
@@ -171,10 +185,10 @@ class SectionHeaderStickyItem extends EditorComponent {
     );
   }
 
-  renderForEdit(v) {
+  renderForEdit(v, vs) {
     return (
       <CustomCSS selectorName={this.getId()} css={v.customCSS}>
-        <Roles allow={["admin"]} fallbackRender={() => this.renderItems(v)}>
+        <Roles allow={["admin"]} fallbackRender={() => this.renderItems(v, vs)}>
           <ContainerBorder
             ref={el => {
               this.containerBorder = el;
@@ -186,19 +200,17 @@ class SectionHeaderStickyItem extends EditorComponent {
             path={this.getPath()}
           >
             {this.renderToolbar(v)}
-            {this.renderItems(v)}
+            {this.renderItems(v, vs)}
           </ContainerBorder>
         </Roles>
       </CustomCSS>
     );
   }
 
-  renderForView(v) {
-
-
+  renderForView(v, vs) {
     return (
       <CustomCSS selectorName={this.getId()} css={v.customCSS}>
-        <div>{this.renderItems(v)}</div>
+        <div>{this.renderItems(v, vs)}</div>
       </CustomCSS>
     );
   }

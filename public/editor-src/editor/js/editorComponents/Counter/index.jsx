@@ -6,7 +6,9 @@ import EditorComponent from "visual/editorComponents/EditorComponent";
 import CustomCSS from "visual/component/CustomCSS";
 import Toolbar from "visual/component/Toolbar";
 import * as toolbarConfig from "./toolbar";
-import { styleClassName, styleCSSVars } from "./styles";
+import { style } from "./styles";
+import { css } from "visual/utils/cssStyle";
+import classnames from "classnames";
 import defaultValue from "./defaultValue.json";
 
 class Counter extends EditorComponent {
@@ -53,21 +55,19 @@ class Counter extends EditorComponent {
     );
   }, 1000);
 
-  renderForEdit(_v) {
-    const v = this.applyRulesToValue(_v, [
-      _v.fontStyle && `${_v.fontStyle}__fsDesktop`,
-      _v.tabletFontStyle && `${_v.tabletFontStyle}__fsTablet`,
-      _v.mobileFontStyle && `${_v.mobileFontStyle}__fsMobile`
-    ]);
-
+  renderForEdit(v, vs) {
     const { start, end, duration } = v;
+
+    const className = classnames(
+      "brz-counter",
+      css(`${this.constructor.componentId}`, `${this.getId()}`, style(vs, v))
+    );
 
     return (
       <Toolbar {...this.makeToolbarPropsFromConfig(toolbarConfig)}>
         <CustomCSS selectorName={this.getId()} css={v.customCSS}>
           <div
-            className={styleClassName(v)}
-            style={styleCSSVars(v)}
+            className={className}
             data-start={start}
             data-end={end}
             data-duration={duration}

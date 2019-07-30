@@ -1,34 +1,35 @@
 import { t } from "visual/utils/i18n";
 import { hexToRgba } from "visual/utils/color";
 import { getWeightChoices, getWeight, getFontStyle } from "visual/utils/fonts";
+
 import {
   onChangeTypography,
   onChangeTypographyTablet,
   onChangeTypographyMobile
 } from "visual/utils/onChange";
+
 import {
   toolbarElementProgressBarPercentage,
   toolbarElementProgressBarShowPercentage,
-  toolbarColorHexAndOpacity,
-  toolbarColorPalette,
-  toolbarColorFields,
-  toolbarBgColorHexAndOpacity,
-  toolbarBgColorPalette,
-  toolbarBgColorFields,
-  toolbarElementProgressBarBg2ColorHexAndOpacity,
-  toolbarElementProgressBarBg2ColorPalette,
-  toolbarElementProgressBarBg2ColorFields,
+  toolbarTypography2FontFamily,
+  toolbarTypography2FontStyle,
+  toolbarTypography2FontSize,
+  toolbarTypography2LineHeight,
+  toolbarTypography2FontWeight,
+  toolbarTypography2LetterSpacing,
+  toolbarColor2,
+  toolbarColorHexField2,
+  toolbarBgColor2,
+  toolbarBgColorHexField2,
+  toolbarBoxShadow2,
+  toolbarBoxShadowHexField2,
+  toolbarBoxShadowFields2,
   toolbarSizeWidthWidthPercent,
-  toolbarCustomCSS
+  toolbarHoverTransition
 } from "visual/utils/toolbar";
 
 export function getItemsForDesktop(v) {
   const device = "desktop";
-
-  // Typography
-  const fontStyle = v.fontStyle;
-  const { fontSize, fontFamily, fontWeight, lineHeight, letterSpacing } =
-    fontStyle === "" ? v : getFontStyle(fontStyle);
 
   // ...
   const maxBorderRadius = Math.round(
@@ -75,13 +76,13 @@ export function getItemsForDesktop(v) {
       ]
     },
     {
-      id: "toolbarTypography",
+      id: "popoverTypography",
       type: "popover",
       icon: "nc-font",
       size: "large",
       title: t("Typography"),
       roles: ["admin"],
-      position: 80,
+      position: 70,
       options: [
         {
           type: "grid",
@@ -90,42 +91,19 @@ export function getItemsForDesktop(v) {
             {
               width: 54,
               options: [
-                {
-                  id: "fontFamily",
-                  label: t("Font Family"),
-                  type: "fontFamily",
-                  value: fontFamily,
-                  onChange: ({ id }) => {
-                    return {
-                      ...onChangeTypography(
-                        {
-                          fontFamily: id,
-                          fontWeight: getWeight(fontWeight, id)
-                        },
-                        v
-                      )
-                    };
-                  }
-                }
+                toolbarTypography2FontFamily({
+                  v,
+                  device,
+                  state: "normal",
+                  onChange: ["onChangeTypography2"]
+                })
               ]
             },
             {
               width: 46,
               className: "brz-ed-popover__typography",
               options: [
-                {
-                  id: "fontStyle",
-                  type: "fontStyle",
-                  label: t("Typography"),
-                  className: "brz-ed-popover__font-style",
-                  display: "block",
-                  value: fontStyle,
-                  onChange: newFontStyle => {
-                    return {
-                      fontStyle: newFontStyle
-                    };
-                  }
-                },
+                toolbarTypography2FontStyle({ v, device, state: "normal" }),
                 {
                   type: "grid",
                   className: "brz-ed-grid__typography",
@@ -133,60 +111,35 @@ export function getItemsForDesktop(v) {
                     {
                       width: "50",
                       options: [
-                        {
-                          id: "fontSize",
-                          label: t("Size"),
-                          type: "stepper",
-                          display: "block",
-                          min: 1,
-                          max: 100,
-                          step: 1,
-                          value: fontSize,
-                          onChange: newFontSize =>
-                            onChangeTypography({ fontSize: newFontSize }, v)
-                        },
-                        {
-                          id: "lineHeight",
-                          label: t("Line Hgt."),
-                          type: "stepper",
-                          display: "block",
-                          min: 1,
-                          max: 10,
-                          step: 0.1,
-                          value: lineHeight,
-                          onChange: newLineHeight =>
-                            onChangeTypography({ lineHeight: newLineHeight }, v)
-                        }
+                        toolbarTypography2FontSize({
+                          v,
+                          device,
+                          state: "normal",
+                          onChange: ["onChangeTypography2"]
+                        }),
+                        toolbarTypography2LineHeight({
+                          v,
+                          device,
+                          state: "normal",
+                          onChange: ["onChangeTypography2"]
+                        })
                       ]
                     },
                     {
                       width: "50",
                       options: [
-                        {
-                          id: "fontWeight",
-                          label: t("Weight"),
-                          type: "select",
-                          display: "block",
-                          choices: getWeightChoices(fontFamily),
-                          value: fontWeight,
-                          onChange: newFontWeight =>
-                            onChangeTypography({ fontWeight: newFontWeight }, v)
-                        },
-                        {
-                          id: "letterSpacing",
-                          label: t("Letter Sp."),
-                          type: "stepper",
-                          display: "block",
-                          min: -20,
-                          max: 20,
-                          step: 0.5,
-                          value: letterSpacing,
-                          onChange: newLetterSpacing =>
-                            onChangeTypography(
-                              { letterSpacing: newLetterSpacing },
-                              v
-                            )
-                        }
+                        toolbarTypography2FontWeight({
+                          v,
+                          device,
+                          state: "normal",
+                          onChange: ["onChangeTypography2"]
+                        }),
+                        toolbarTypography2LetterSpacing({
+                          v,
+                          device,
+                          state: "normal",
+                          onChange: ["onChangeTypography2"]
+                        })
                       ]
                     }
                   ]
@@ -211,142 +164,399 @@ export function getItemsForDesktop(v) {
       },
       options: [
         {
-          id: "colorTabs",
+          id: "tabsState",
+          tabsPosition: "left",
           type: "tabs",
+          value: v.tabsState,
           tabs: [
             {
-              label: t("Text"),
+              id: "tabNormal",
+              tabIcon: "nc-circle",
+              title: t("Normal"),
               options: [
-                toolbarColorHexAndOpacity({
-                  v,
-                  device,
-                  state: "normal",
-                  onChange: [
-                    "onChangeColorHexAndOpacity",
-                    "onChangeColorHexAndOpacityPalette"
-                  ]
-                }),
-                toolbarColorPalette({
-                  v,
-                  device,
-                  state: "normal",
-                  onChange: [
-                    "onChangeColorPalette",
-                    "onChangeColorPaletteOpacity"
-                  ]
-                }),
                 {
-                  type: "grid",
-                  className: "brz-ed-grid__color-fileds",
-                  columns: [
+                  id: "tabsColor",
+                  type: "tabs",
+                  value: v.tabsColor,
+                  tabs: [
                     {
-                      width: 100,
+                      id: "tabText",
+                      label: t("Text"),
                       options: [
-                        toolbarColorFields({
+                        toolbarColor2({
                           v,
                           device,
                           state: "normal",
-                          onChange: [
+                          onChangeHex: [
                             "onChangeColorHexAndOpacity",
                             "onChangeColorHexAndOpacityPalette"
+                          ],
+                          onChangePalette: [
+                            "onChangeColorPalette",
+                            "onChangeColorPaletteOpacity"
                           ]
-                        })
+                        }),
+                        {
+                          type: "grid",
+                          className: "brz-ed-grid__color-fileds",
+                          columns: [
+                            {
+                              width: 100,
+                              options: [
+                                toolbarColorHexField2({
+                                  v,
+                                  device,
+                                  state: "normal",
+                                  onChange: [
+                                    "onChangeColorHexAndOpacity",
+                                    "onChangeColorHexAndOpacityPalette"
+                                  ]
+                                })
+                              ]
+                            }
+                          ]
+                        }
                       ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              label: t("Bar"),
-              options: [
-                toolbarBgColorHexAndOpacity({
-                  v,
-                  device,
-                  state: "normal",
-                  onChange: [
-                    "onChangeBgColorHexAndOpacity",
-                    "onChangeBgColorHexAndOpacityPalette"
-                  ]
-                }),
-                toolbarBgColorPalette({
-                  v,
-                  device,
-                  state: "normal",
-                  onChange: [
-                    "onChangeBgColorPalette",
-                    "onChangeBgColorPaletteOpacity"
-                  ]
-                }),
-                {
-                  type: "grid",
-                  className: "brz-ed-grid__color-fileds",
-                  columns: [
+                    },
                     {
-                      width: 100,
+                      id: "tabBar",
+                      label: t("Bar"),
                       options: [
-                        toolbarBgColorFields({
+                        toolbarBgColor2({
                           v,
                           device,
                           state: "normal",
-                          onChange: [
-                            "onChangeBgColorHexAndOpacity",
-                            "onChangeBgColorHexAndOpacityPalette"
+                          showSelect: false,
+                          onChangeHex: [
+                            "onChangeBgColorHexAndOpacity2",
+                            "onChangeBgColorHexAndOpacityPalette2"
+                          ],
+                          onChangePalette: [
+                            "onChangeBgColorPalette2",
+                            "onChangeBgColorPaletteOpacity2"
                           ]
-                        })
+                        }),
+                        {
+                          type: "grid",
+                          className: "brz-ed-grid__color-fileds",
+                          columns: [
+                            {
+                              width: 30,
+                              options: [
+                                toolbarBgColorHexField2({
+                                  v,
+                                  device,
+                                  state: "normal",
+                                  onChange: [
+                                    "onChangeBgColorHexAndOpacity2",
+                                    "onChangeBgColorHexAndOpacityPalette2"
+                                  ]
+                                })
+                              ]
+                            }
+                          ]
+                        }
                       ]
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              label: t("Background"),
-              options: [
-                toolbarBgColorHexAndOpacity({
-                  v,
-                  device,
-                  state: "normal",
-                  prefix: "bg2",
-                  onChange: [
-                    "onChangeBgColorHexAndOpacity",
-                    "onChangeBgColorHexAndOpacityPalette",
-                    "onChangeBgColorHexAndOpacityDependencies"
-                  ]
-                }),
-                toolbarBgColorPalette({
-                  v,
-                  device,
-                  state: "normal",
-                  prefix: "bg2",
-                  onChange: [
-                    "onChangeBgColorPalette",
-                    "onChangeBgColorPaletteOpacity",
-                    "onChangeBgColorHexAndOpacityDependencies"
-                  ]
-                }),
-
-                {
-                  type: "grid",
-                  className: "brz-ed-grid__color-fileds",
-                  columns: [
+                    },
                     {
-                      width: 100,
+                      id: "tabBg",
+                      label: t("Bg"),
                       options: [
-                        toolbarBgColorFields({
+                        toolbarBgColor2({
                           v,
                           device,
                           state: "normal",
                           prefix: "bg2",
-                          disabled:
-                            v.bgColorType === "gradient" &&
-                            v.gradientActivePointer === "finishPointer",
-                          onChange: [
-                            "onChangeBgColorHexAndOpacity",
-                            "onChangeBgColorHexAndOpacityPalette",
-                            "onChangeBgColorHexAndOpacityDependencies"
+                          showSelect: false,
+                          onChangeHex: [
+                            "onChangeBgColorHexAndOpacity2",
+                            "onChangeBgColorHexAndOpacityPalette2"
+                          ],
+                          onChangePalette: [
+                            "onChangeBgColorPalette2",
+                            "onChangeBgColorPaletteOpacity2"
                           ]
-                        })
+                        }),
+                        {
+                          type: "grid",
+                          className: "brz-ed-grid__color-fileds",
+                          columns: [
+                            {
+                              width: 30,
+                              options: [
+                                toolbarBgColorHexField2({
+                                  v,
+                                  device,
+                                  state: "normal",
+                                  prefix: "bg2",
+                                  onChange: [
+                                    "onChangeBgColorHexAndOpacity2",
+                                    "onChangeBgColorHexAndOpacityPalette2"
+                                  ]
+                                })
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      id: "tabBoxShadow",
+                      label: t("Shadow"),
+                      options: [
+                        toolbarBoxShadow2({
+                          v,
+                          device,
+                          state: "normal",
+                          showSelect: false,
+                          choices: "outline",
+                          onChangeStyle: [
+                            "onChangeBoxShadowStyle2",
+                            "onChangeBoxShadowStyleDependencies2"
+                          ],
+                          onChangeHex: [
+                            "onChangeBoxShadowHexAndOpacity2",
+                            "onChangeBoxShadowHexAndOpacityPalette2",
+                            "onChangeBoxShadowHexAndOpacityDependencies2"
+                          ],
+                          onChangePalette: [
+                            "onChangeBoxShadowPalette2",
+                            "onChangeBoxShadowPaletteOpacity2",
+                            "onChangeBoxShadowHexAndOpacityDependencies2"
+                          ]
+                        }),
+                        {
+                          type: "grid",
+                          className: "brz-ed-grid__color-fileds",
+                          columns: [
+                            {
+                              width: 41,
+                              options: [
+                                toolbarBoxShadowHexField2({
+                                  v,
+                                  device,
+                                  state: "normal",
+                                  onChange: [
+                                    "onChangeBoxShadowHexAndOpacity2",
+                                    "onChangeBoxShadowHexAndOpacityPalette2",
+                                    "onChangeBoxShadowHexAndOpacityDependencies2"
+                                  ]
+                                })
+                              ]
+                            },
+                            {
+                              width: 59,
+                              options: [
+                                toolbarBoxShadowFields2({
+                                  v,
+                                  device,
+                                  state: "normal",
+                                  onChange: [
+                                    "onChangeBoxShadow2",
+                                    "onChangeBoxShadowDependencies2"
+                                  ]
+                                })
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              id: "tabHover",
+              tabIcon: "nc-hover",
+              title: t("Hover"),
+              options: [
+                {
+                  id: "tabsColor",
+                  type: "tabs",
+                  value: v.tabsColor,
+                  tabs: [
+                    {
+                      id: "tabText",
+                      label: t("Text"),
+                      options: [
+                        toolbarColor2({
+                          v,
+                          device,
+                          state: "hover",
+                          onChangeHex: [
+                            "onChangeColorHexAndOpacity",
+                            "onChangeColorHexAndOpacityPalette"
+                          ],
+                          onChangePalette: [
+                            "onChangeColorPalette",
+                            "onChangeColorPaletteOpacity"
+                          ]
+                        }),
+                        {
+                          type: "grid",
+                          className: "brz-ed-grid__color-fileds",
+                          columns: [
+                            {
+                              width: 100,
+                              options: [
+                                toolbarColorHexField2({
+                                  v,
+                                  device,
+                                  state: "hover",
+                                  onChange: [
+                                    "onChangeColorHexAndOpacity",
+                                    "onChangeColorHexAndOpacityPalette"
+                                  ]
+                                })
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      id: "tabBar",
+                      label: t("Bar"),
+                      options: [
+                        toolbarBgColor2({
+                          v,
+                          device,
+                          state: "hover",
+                          showSelect: false,
+                          onChangeHex: [
+                            "onChangeBgColorHexAndOpacity2",
+                            "onChangeBgColorHexAndOpacityPalette2"
+                          ],
+                          onChangePalette: [
+                            "onChangeBgColorPalette2",
+                            "onChangeBgColorPaletteOpacity2"
+                          ]
+                        }),
+                        {
+                          type: "grid",
+                          className: "brz-ed-grid__color-fileds",
+                          columns: [
+                            {
+                              width: 30,
+                              options: [
+                                toolbarBgColorHexField2({
+                                  v,
+                                  device,
+                                  state: "hover",
+                                  onChange: [
+                                    "onChangeBgColorHexAndOpacity2",
+                                    "onChangeBgColorHexAndOpacityPalette2"
+                                  ]
+                                })
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      id: "tabBg",
+                      label: t("Bg"),
+                      options: [
+                        toolbarBgColor2({
+                          v,
+                          device,
+                          state: "hover",
+                          prefix: "bg2",
+                          showSelect: false,
+                          onChangeHex: [
+                            "onChangeBgColorHexAndOpacity2",
+                            "onChangeBgColorHexAndOpacityPalette2"
+                          ],
+                          onChangePalette: [
+                            "onChangeBgColorPalette2",
+                            "onChangeBgColorPaletteOpacity2"
+                          ]
+                        }),
+                        {
+                          type: "grid",
+                          className: "brz-ed-grid__color-fileds",
+                          columns: [
+                            {
+                              width: 30,
+                              options: [
+                                toolbarBgColorHexField2({
+                                  v,
+                                  device,
+                                  state: "hover",
+                                  prefix: "bg2",
+                                  onChange: [
+                                    "onChangeBgColorHexAndOpacity2",
+                                    "onChangeBgColorHexAndOpacityPalette2"
+                                  ]
+                                })
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      id: "tabBoxShadow",
+                      label: t("Shadow"),
+                      options: [
+                        toolbarBoxShadow2({
+                          v,
+                          device,
+                          state: "hover",
+                          showSelect: false,
+                          choices: "outline",
+                          onChangeStyle: [
+                            "onChangeBoxShadowStyle2",
+                            "onChangeBoxShadowStyleDependencies2"
+                          ],
+                          onChangeHex: [
+                            "onChangeBoxShadowHexAndOpacity2",
+                            "onChangeBoxShadowHexAndOpacityPalette2",
+                            "onChangeBoxShadowHexAndOpacityDependencies2"
+                          ],
+                          onChangePalette: [
+                            "onChangeBoxShadowPalette2",
+                            "onChangeBoxShadowPaletteOpacity2",
+                            "onChangeBoxShadowHexAndOpacityDependencies2"
+                          ]
+                        }),
+                        {
+                          type: "grid",
+                          className: "brz-ed-grid__color-fileds",
+                          columns: [
+                            {
+                              width: 41,
+                              options: [
+                                toolbarBoxShadowHexField2({
+                                  v,
+                                  device,
+                                  state: "hover",
+                                  onChange: [
+                                    "onChangeBoxShadowHexAndOpacity2",
+                                    "onChangeBoxShadowHexAndOpacityPalette2",
+                                    "onChangeBoxShadowHexAndOpacityDependencies2"
+                                  ]
+                                })
+                              ]
+                            },
+                            {
+                              width: 59,
+                              options: [
+                                toolbarBoxShadowFields2({
+                                  v,
+                                  device,
+                                  state: "hover",
+                                  onChange: [
+                                    "onChangeBoxShadow2",
+                                    "onChangeBoxShadowDependencies2"
+                                  ]
+                                })
+                              ]
+                            }
+                          ]
+                        }
                       ]
                     }
                   ]
@@ -355,7 +565,11 @@ export function getItemsForDesktop(v) {
             }
           ]
         }
-      ]
+      ],
+      onChange: (_, { isOpen }) => ({
+        tabsState: !isOpen ? "" : v.tabsState,
+        tabsColor: !isOpen ? "" : v.tabsColor
+      })
     },
     {
       id: "toolbarSettings",
@@ -387,7 +601,7 @@ export function getItemsForDesktop(v) {
                   id: "moreSettingsAdvanced",
                   label: t("Advanced"),
                   tabIcon: "nc-cog",
-                  options: []
+                  options: [toolbarHoverTransition({ v, position: 100 })]
                 }
               ]
             }
@@ -401,17 +615,6 @@ export function getItemsForDesktop(v) {
 export function getItemsForTablet(v) {
   const device = "tablet";
   const state = "normal";
-
-  // Typography
-  const { fontFamily } = v.fontStyle === "" ? v : getFontStyle(v.fontStyle);
-
-  const tabletFontStyle = v.tabletFontStyle;
-  const {
-    tabletFontSize,
-    tabletFontWeight,
-    tabletLineHeight,
-    tabletLetterSpacing
-  } = tabletFontStyle === "" ? v : getFontStyle(tabletFontStyle);
 
   return [
     {
@@ -428,72 +631,53 @@ export function getItemsForTablet(v) {
           className: "brz-ed-grid__typography",
           columns: [
             {
-              width: 50,
-              className: "brz-ed-popover__typography--small",
+              className: "brz-ed-popover__typography",
               options: [
+                toolbarTypography2FontStyle({
+                  v,
+                  device,
+                  state: "normal",
+                  onChange: ["onChangeTypography2"]
+                }),
                 {
-                  id: "tabletFontSize",
-                  label: t("Size"),
-                  type: "stepper",
-                  display: "block",
-                  min: 1,
-                  max: 100,
-                  step: 1,
-                  value: tabletFontSize,
-                  onChange: newTabletFontSize =>
-                    onChangeTypographyTablet(
-                      { tabletFontSize: newTabletFontSize },
-                      v
-                    )
-                },
-                {
-                  id: "tabletLineHeight",
-                  label: t("Line Hgt."),
-                  type: "stepper",
-                  display: "block",
-                  min: 1,
-                  max: 10,
-                  step: 0.1,
-                  value: tabletLineHeight,
-                  onChange: newTabletLineHeight =>
-                    onChangeTypographyTablet(
-                      { tabletLineHeight: newTabletLineHeight },
-                      v
-                    )
-                }
-              ]
-            },
-            {
-              width: 50,
-              className: "brz-ed-popover__typography--small",
-              options: [
-                {
-                  id: "tabletFontWeight",
-                  label: t("Weight"),
-                  type: "select",
-                  display: "block",
-                  choices: getWeightChoices(fontFamily),
-                  value: tabletFontWeight,
-                  onChange: newTabletFontWeight =>
-                    onChangeTypographyTablet(
-                      { tabletFontWeight: newTabletFontWeight },
-                      v
-                    )
-                },
-                {
-                  id: "tabletLetterSpacing",
-                  label: t("Letter Sp."),
-                  type: "stepper",
-                  display: "block",
-                  min: -20,
-                  max: 20,
-                  step: 0.5,
-                  value: tabletLetterSpacing,
-                  onChange: newTabletLetterSpacing =>
-                    onChangeTypographyTablet(
-                      { tabletLetterSpacing: newTabletLetterSpacing },
-                      v
-                    )
+                  type: "grid",
+                  className: "brz-ed-grid__typography",
+                  columns: [
+                    {
+                      width: "50",
+                      options: [
+                        toolbarTypography2FontSize({
+                          v,
+                          device,
+                          state: "normal",
+                          onChange: ["onChangeTypography2"]
+                        }),
+                        toolbarTypography2LineHeight({
+                          v,
+                          device,
+                          state: "normal",
+                          onChange: ["onChangeTypography2"]
+                        })
+                      ]
+                    },
+                    {
+                      width: "50",
+                      options: [
+                        toolbarTypography2FontWeight({
+                          v,
+                          device,
+                          state: "normal",
+                          onChange: ["onChangeTypography2"]
+                        }),
+                        toolbarTypography2LetterSpacing({
+                          v,
+                          device,
+                          state: "normal",
+                          onChange: ["onChangeTypography2"]
+                        })
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -517,17 +701,6 @@ export function getItemsForMobile(v) {
   const device = "mobile";
   const state = "normal";
 
-  // Typography
-  const { fontFamily } = v.fontStyle === "" ? v : getFontStyle(v.fontStyle);
-
-  const mobileFontStyle = v.mobileFontStyle;
-  const {
-    mobileFontSize,
-    mobileFontWeight,
-    mobileLineHeight,
-    mobileLetterSpacing
-  } = mobileFontStyle === "" ? v : getFontStyle(mobileFontStyle);
-
   return [
     {
       id: "mobileToolbarTypography",
@@ -543,72 +716,53 @@ export function getItemsForMobile(v) {
           className: "brz-ed-grid__typography",
           columns: [
             {
-              width: 50,
-              className: "brz-ed-popover__typography--small",
+              className: "brz-ed-popover__typography",
               options: [
+                toolbarTypography2FontStyle({
+                  v,
+                  device,
+                  state: "normal",
+                  onChange: ["onChangeTypography2"]
+                }),
                 {
-                  id: "mobileFontSize",
-                  label: t("Size"),
-                  type: "stepper",
-                  display: "block",
-                  min: 1,
-                  max: 100,
-                  step: 1,
-                  value: mobileFontSize,
-                  onChange: newMobileFontSize =>
-                    onChangeTypographyMobile(
-                      { mobileFontSize: newMobileFontSize },
-                      v
-                    )
-                },
-                {
-                  id: "mobileLineHeight",
-                  label: t("Line Hgt."),
-                  type: "stepper",
-                  display: "block",
-                  min: 1,
-                  max: 10,
-                  step: 0.1,
-                  value: mobileLineHeight,
-                  onChange: newMobileLineHeight =>
-                    onChangeTypographyMobile(
-                      { mobileLineHeight: newMobileLineHeight },
-                      v
-                    )
-                }
-              ]
-            },
-            {
-              width: 50,
-              className: "brz-ed-popover__typography--small",
-              options: [
-                {
-                  id: "mobileFontWeight",
-                  label: t("Weight"),
-                  type: "select",
-                  display: "block",
-                  choices: getWeightChoices(fontFamily),
-                  value: mobileFontWeight,
-                  onChange: newMobileFontWeight =>
-                    onChangeTypographyMobile(
-                      { mobileFontWeight: newMobileFontWeight },
-                      v
-                    )
-                },
-                {
-                  id: "mobileLetterSpacing",
-                  label: t("Letter Sp."),
-                  type: "stepper",
-                  display: "block",
-                  min: -20,
-                  max: 20,
-                  step: 0.5,
-                  value: mobileLetterSpacing,
-                  onChange: newMobileLetterSpacing =>
-                    onChangeTypographyMobile(
-                      { mobileLetterSpacing: newMobileLetterSpacing },
-                      v
-                    )
+                  type: "grid",
+                  className: "brz-ed-grid__typography",
+                  columns: [
+                    {
+                      width: "50",
+                      options: [
+                        toolbarTypography2FontSize({
+                          v,
+                          device,
+                          state: "normal",
+                          onChange: ["onChangeTypography2"]
+                        }),
+                        toolbarTypography2LineHeight({
+                          v,
+                          device,
+                          state: "normal",
+                          onChange: ["onChangeTypography2"]
+                        })
+                      ]
+                    },
+                    {
+                      width: "50",
+                      options: [
+                        toolbarTypography2FontWeight({
+                          v,
+                          device,
+                          state: "normal",
+                          onChange: ["onChangeTypography2"]
+                        }),
+                        toolbarTypography2LetterSpacing({
+                          v,
+                          device,
+                          state: "normal",
+                          onChange: ["onChangeTypography2"]
+                        })
+                      ]
+                    }
+                  ]
                 }
               ]
             }

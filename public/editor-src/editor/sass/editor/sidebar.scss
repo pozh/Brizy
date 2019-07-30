@@ -277,8 +277,27 @@
   }
 
   // Ordering
-  &-ordering {
+  &-sortable {
     padding-top: 27px;
+    height: 100%;
+
+    &--sorting {
+      cursor: move !important;
+
+      .brz-ed-sidebar-block-item {
+        border: none !important;
+
+        .brz-ed-sidebar-block-image {
+          cursor: move !important;
+        }
+        .brz-ed-sidebar-block-remove {
+          display: none !important;
+        }
+        .brz-ed-sidebar-block-layout {
+          opacity: 0 !important;
+        }
+      }
+    }
   }
 
   // Blocks
@@ -307,6 +326,7 @@
       }
 
       &.brz-ed-sidebar-block-item-helper {
+        cursor: move;
         z-index: 99999999999;
       }
     }

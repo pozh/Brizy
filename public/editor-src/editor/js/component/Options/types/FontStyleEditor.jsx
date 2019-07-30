@@ -48,18 +48,19 @@ class FontStyle extends React.Component {
   };
 
   handleTextChange = text => {
-    this.props.onChange("title", text);
+    this.props.onChange({ title: text });
   };
 
   handleDelete = () => {
     hideToolbar();
-    this.props.onChange("deleted", true);
+    this.props.onChange({ deleted: true });
   };
 
   render() {
     const {
       title,
       fontFamily,
+      fontFamilyType,
       fontSize,
       fontWeight,
       lineHeight,
@@ -81,7 +82,8 @@ class FontStyle extends React.Component {
       active
     });
     const sampleStyle = {
-      fontFamily: getFontById(fontFamily).family,
+      fontFamily: getFontById({ family: fontFamily, type: fontFamilyType })
+        .family,
       fontWeight:
         device === "desktop"
           ? fontWeight
@@ -110,7 +112,8 @@ class FontStyle extends React.Component {
                     label: "Font Family",
                     type: "fontFamily",
                     value: fontFamily,
-                    onChange: ({ id }) => onChange("fontFamily", id)
+                    onChange: ({ id, type }) =>
+                      onChange({ fontFamily: id, fontFamilyType: type })
                   }
                 ]
               },
@@ -144,8 +147,7 @@ class FontStyle extends React.Component {
                                     max: 300,
                                     step: 1,
                                     value: fontSize,
-                                    onChange: fontSize =>
-                                      onChange("fontSize", fontSize)
+                                    onChange: fontSize => onChange({ fontSize })
                                   },
                                   {
                                     id: "lineHeight",
@@ -157,7 +159,7 @@ class FontStyle extends React.Component {
                                     step: 0.1,
                                     value: lineHeight,
                                     onChange: lineHeight =>
-                                      onChange("lineHeight", lineHeight)
+                                      onChange({ lineHeight })
                                   }
                                 ]
                               },
@@ -169,10 +171,13 @@ class FontStyle extends React.Component {
                                     label: "Weight",
                                     type: "select",
                                     display: "block",
-                                    choices: getWeightChoices(fontFamily),
+                                    choices: getWeightChoices({
+                                      family: fontFamily,
+                                      type: fontFamilyType
+                                    }),
                                     value: fontWeight,
                                     onChange: fontWeight =>
-                                      onChange("fontWeight", fontWeight)
+                                      onChange({ fontWeight })
                                   },
                                   {
                                     id: "letterSpacing",
@@ -184,7 +189,7 @@ class FontStyle extends React.Component {
                                     step: 0.5,
                                     value: letterSpacing,
                                     onChange: letterSpacing =>
-                                      onChange("letterSpacing", letterSpacing)
+                                      onChange({ letterSpacing })
                                   }
                                 ]
                               }
@@ -213,7 +218,7 @@ class FontStyle extends React.Component {
                                     step: 1,
                                     value: tabletFontSize,
                                     onChange: tabletFontSize =>
-                                      onChange("tabletFontSize", tabletFontSize)
+                                      onChange({ tabletFontSize })
                                   },
                                   {
                                     id: "tabletLineHeight",
@@ -225,10 +230,7 @@ class FontStyle extends React.Component {
                                     step: 0.1,
                                     value: tabletLineHeight,
                                     onChange: tabletLineHeight =>
-                                      onChange(
-                                        "tabletLineHeight",
-                                        tabletLineHeight
-                                      )
+                                      onChange({ tabletLineHeight })
                                   }
                                 ]
                               },
@@ -240,13 +242,13 @@ class FontStyle extends React.Component {
                                     label: "Weight",
                                     type: "select",
                                     display: "block",
-                                    choices: getWeightChoices(fontFamily),
+                                    choices: getWeightChoices({
+                                      family: fontFamily,
+                                      type: fontFamilyType
+                                    }),
                                     value: tabletFontWeight,
                                     onChange: tabletFontWeight =>
-                                      onChange(
-                                        "tabletFontWeight",
-                                        tabletFontWeight
-                                      )
+                                      onChange({ tabletFontWeight })
                                   },
                                   {
                                     id: "tabletLetterSpacing",
@@ -258,10 +260,7 @@ class FontStyle extends React.Component {
                                     step: 0.5,
                                     value: tabletLetterSpacing,
                                     onChange: tabletLetterSpacing =>
-                                      onChange(
-                                        "tabletLetterSpacing",
-                                        tabletLetterSpacing
-                                      )
+                                      onChange({ tabletLetterSpacing })
                                   }
                                 ]
                               }
@@ -290,7 +289,7 @@ class FontStyle extends React.Component {
                                     step: 1,
                                     value: mobileFontSize,
                                     onChange: mobileFontSize =>
-                                      onChange("mobileFontSize", mobileFontSize)
+                                      onChange({ mobileFontSize })
                                   },
                                   {
                                     id: "mobileLineHeight",
@@ -302,10 +301,7 @@ class FontStyle extends React.Component {
                                     step: 0.1,
                                     value: mobileLineHeight,
                                     onChange: mobileLineHeight =>
-                                      onChange(
-                                        "mobileLineHeight",
-                                        mobileLineHeight
-                                      )
+                                      onChange({ mobileLineHeight })
                                   }
                                 ]
                               },
@@ -317,13 +313,13 @@ class FontStyle extends React.Component {
                                     label: "Weight",
                                     type: "select",
                                     display: "block",
-                                    choices: getWeightChoices(fontFamily),
+                                    choices: getWeightChoices({
+                                      family: fontFamily,
+                                      type: fontFamilyType
+                                    }),
                                     value: mobileFontWeight,
                                     onChange: mobileFontWeight =>
-                                      onChange(
-                                        "mobileFontWeight",
-                                        mobileFontWeight
-                                      )
+                                      onChange({ mobileFontWeight })
                                   },
                                   {
                                     id: "mobileLetterSpacing",
@@ -335,10 +331,7 @@ class FontStyle extends React.Component {
                                     step: 0.5,
                                     value: mobileLetterSpacing,
                                     onChange: mobileLetterSpacing =>
-                                      onChange(
-                                        "mobileLetterSpacing",
-                                        mobileLetterSpacing
-                                      )
+                                      onChange({ mobileLetterSpacing })
                                   }
                                 ]
                               }
@@ -399,12 +392,13 @@ class FontStyleEditor extends React.Component {
     value: {}
   };
 
-  handleChange = (id, type, newValue) => {
-    const value = this.props.value.map(el =>
-      id === el.id ? { ...el, [`${type}`]: newValue } : el
+  handleChange = (id, newValue) => {
+    const { value: _value, onChange } = this.props;
+    const value = _value.map(el =>
+      id === el.id ? { ...el, ...newValue } : el
     );
 
-    this.props.onChange(value);
+    onChange(value);
   };
 
   handleAddNew = () => {
@@ -437,8 +431,8 @@ class FontStyleEditor extends React.Component {
       <div className="brz-ed-option__font-styles">
         <div className="brz-ed-option__font-styles--scroll-pane">
           <ScrollPane
-            className="brz-ed-scroll-pane brz-ed-scroll--medium brz-ed-scroll--darker"
-            style={{ height: `100%` }}
+            className="brz-ed-scroll--medium brz-ed-scroll--darker"
+            style={{ height: "100%" }}
           >
             {items}
           </ScrollPane>

@@ -92,6 +92,7 @@ export function styleClassName(v) {
     const {
       iconPosition,
       fontFamily,
+      fontFamilyType,
       fontSize,
       fontWeight,
       lineHeight,
@@ -177,7 +178,8 @@ export function styleClassName(v) {
     glamorObj = {
       ".brz &": {
         flexFlow: iconPosition !== "left" ? "row-reverse nowrap" : "row nowrap",
-        fontFamily: getFontById(fontFamily).family,
+        fontFamily: getFontById({ family: fontFamily, type: fontFamilyType })
+          .family,
         fontSize,
         lineHeight,
         fontWeight,
@@ -224,7 +226,6 @@ export function styleClassName(v) {
             device: "desktop",
             state: "hover"
           }),
-          boxShadow: styleBoxShadow({ v, device: "desktop", state: "normal" }),
           backgroundImage: styleBgGradient({
             v,
             device: "desktop",
@@ -284,6 +285,7 @@ export function styleCSSVars(v) {
   const {
     iconPosition,
     fontFamily,
+    fontFamilyType,
     fontSize,
     fontWeight,
     lineHeight,
@@ -368,7 +370,8 @@ export function styleCSSVars(v) {
   return {
     "--iconPosition":
       iconPosition !== "left" ? "row-reverse nowrap" : "row nowrap",
-    "--fontFamily": getFontById(fontFamily).family,
+    "--fontFamily": getFontById({ family: fontFamily, type: fontFamilyType })
+      .family,
     "--fontWeight": fontWeight,
     "--fontSize": `${fontSize}px`,
     "--lineHeight": lineHeight,

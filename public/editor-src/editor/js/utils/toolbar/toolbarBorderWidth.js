@@ -342,3 +342,138 @@ export function toolbarBorderWidthBorderColorPicker({
     }
   };
 }
+
+//border Width 2
+export function toolbarBorderWidthBorderColorPickerGrouped2({
+  v,
+  device,
+  state,
+  onChange
+}) {
+  const borderWidthKey = defaultValueKey({
+    key: "borderWidth",
+    device,
+    state
+  });
+  const borderWidthValue = defaultValueValue({
+    v,
+    key: "borderWidth",
+    device,
+    state
+  });
+
+  return {
+    id: borderWidthKey,
+    label: t("Size"),
+    type: "inputNumber",
+    min: 0,
+    max: 360,
+    value: borderWidthValue,
+    onChange: value => {
+      const values = {
+        ...{ v, device, state, onChange },
+        ...{ value }
+      };
+      return saveOnChanges(values);
+    }
+  };
+}
+
+export function toolbarBorderWidthBorderColorPicker2({
+  v,
+  device,
+  state,
+  onChangeType,
+  onChangeGrouped,
+  onChangeUngrouped
+}) {
+  const borderWidthType = defaultValueValue({
+    v,
+    key: "borderWidthType",
+    device,
+    state
+  });
+  const borderWidth = defaultValueValue({
+    v,
+    key: "borderWidth",
+    device,
+    state
+  });
+  const borderTopWidth = defaultValueValue({
+    v,
+    key: "borderTopWidth",
+    device,
+    state
+  });
+  const borderRightWidth = defaultValueValue({
+    v,
+    key: "borderRightWidth",
+    device,
+    state
+  });
+  const borderBottomWidth = defaultValueValue({
+    v,
+    key: "borderBottomWidth",
+    device,
+    state
+  });
+  const borderLeftWidth = defaultValueValue({
+    v,
+    key: "borderLeftWidth",
+    device,
+    state
+  });
+  const borderWidthKeys = {
+    grouped: ["borderWidth"],
+    ungrouped: [
+      "borderTopWidth",
+      "borderRightWidth",
+      "borderBottomWidth",
+      "borderLeftWidth"
+    ]
+  };
+
+  return {
+    id: "borderWidth",
+    type: "multiInputPicker",
+    label: borderWidthType === "grouped" ? t("Size") : false,
+    value: {
+      type: borderWidthType,
+      grouped: [borderWidth],
+      ungrouped: [
+        borderTopWidth,
+        borderRightWidth,
+        borderBottomWidth,
+        borderLeftWidth
+      ]
+    },
+    onChange: ({ type, isChanged, isChangedIndex, ...others }) => {
+      const valuesType = {
+        ...{
+          v,
+          device,
+          state,
+          onChange: onChangeType
+        },
+        ...{ type }
+      };
+
+      const valuesValue = {
+        ...{
+          v,
+          device,
+          state,
+          onChange: type === "grouped" ? onChangeGrouped : onChangeUngrouped
+        },
+        ...{
+          current: borderWidthKeys[type][isChangedIndex],
+          value: others[type][isChangedIndex]
+        }
+      };
+
+      return isChanged === "type"
+        ? saveOnChanges(valuesType)
+        : saveOnChanges(valuesValue);
+    }
+  };
+}

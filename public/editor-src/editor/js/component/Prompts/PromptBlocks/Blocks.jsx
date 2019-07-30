@@ -1,20 +1,21 @@
-import React from "react";
+import React, { Component, Fragment } from "react";
 import _ from "underscore";
+import { connect } from "react-redux";
 import ScrollPane from "visual/component/ScrollPane";
+import EditorIcon from "visual/component/EditorIcon";
+import { fontSelector, projectSelector } from "visual/redux/selectors";
 import Sidebar from "./common/Sidebar";
 import SearchInput from "./common/SearchInput";
 import DataFilter from "./common/DataFilter";
 import ThumbnailGrid from "./common/ThumbnailGrid";
-import Editor from "visual/global/Editor";
 import { blockTemplateThumbnailUrl } from "visual/utils/blocks";
+import { assetUrl } from "visual/utils/asset";
+import {
+  getUsedModelsFonts,
+  getBlocksStylesFonts
+} from "visual/utils/traverse";
 import { t } from "visual/utils/i18n";
-
-const defaultFilterUI = {
-  sidebar: true,
-  search: true,
-  type: true, // dark | light
-  categories: true
-};
+import { normalizeFonts } from "visual/utils/fonts";
 
 let defaultFilter = {
   type: 0,
@@ -22,60 +23,129 @@ let defaultFilter = {
   search: ""
 };
 
-export default class Blocks extends React.Component {
+class Blocks extends Component {
   static defaultProps = {
-    filterUI: defaultFilterUI,
-    blocksConfig: null,
+    showSidebar: true,
+    showSearch: true,
+    showType: true, // dark | light
+    showCategories: true,
+    categoriesFilter: categories => categories,
     onAddBlocks: _.noop,
     onClose: _.noop
   };
 
-  constructor(props) {
-    super(props);
-
-    this.blocksConfig = props.blocksConfig || Editor.getBlocks();
-  }
-
-  handleThumbnailAdd = thumbnailData => {
-    const { onAddBlocks, onClose } = this.props;
-    const resolve = { ...thumbnailData.resolve, blockId: thumbnailData.id };
-
-    onAddBlocks(resolve);
-    onClose();
+  state = {
+    data: null
   };
 
-  render() {
-    const { filterUI, HeaderSlotLeft } = this.props;
-    const thumbnails = this.blocksConfig.blocks.map(block => ({
-      ...block,
-      thumbnailSrc: blockTemplateThumbnailUrl(block)
-    }));
-    const filterFn = (item, cf) => {
-      const typeMatch = cf.type === item.type;
+  async componentDidMount() {
+    const { categoriesFilter, selectedKit } = this.props;
 
-      const categoryMatch =
-        cf.category === "*" || item.cat.includes(Number(cf.category));
-
-      const searchMatch =
-        cf.search === "" ||
-        new RegExp(cf.search.replace(/[.*+?^${}()|[\]\\]/g, ""), "i").test(
-          item.keywords
-        );
-
-      return typeMatch && categoryMatch && searchMatch;
-    };
-
-    const blocksArr = this.blocksConfig.blocks;
-    const countersColorBlocks = {};
-    const countersSectionBlocks = {};
-    const types = this.blocksConfig.types;
-    const categories = [
+    // filter categories
+    const url = assetUrl("kits/meta.json");
+    const r = await fetch(url);
+    const data = await r.json();
+    const categories = categoriesFilter([
       {
         id: "*",
         title: t("All Categories")
       },
-      ...this.blocksConfig.categories
-    ].filter(category => category.hidden !== true);
+      ...data.categories
+    ]);
+
+    // filter blocks
+    const categoryIds = new Map(categories.map(cat => [cat.id, true]));
+    const blocks = data.kits
+      .find(({ id }) => id === selectedKit)
+      .blocks.filter(block => block.cat.some(cat => categoryIds.get(cat)));
+
+    this.setState({
+      data,
+      blocks,
+      categories
+    });
+  }
+
+  handleThumbnailAdd = async thumbnailData => {
+    const { projectFonts, onAddBlocks, onClose } = this.props;
+    const block = await fetch(
+      assetUrl(`kits/resolves/${thumbnailData.id}.json`)
+    );
+    const blockData = await block.json();
+    const resolve = { ...blockData, blockId: thumbnailData.id };
+    const fontsDiff = getBlocksStylesFonts(
+      getUsedModelsFonts({ models: resolve }),
+      projectFonts
+    );
+    const fonts = await normalizeFonts(fontsDiff);
+
+    onAddBlocks({
+      block: resolve,
+      fonts
+    });
+    onClose();
+  };
+
+  renderLoading() {
+    const { showSidebar, showSearch, HeaderSlotLeft } = this.props;
+
+    return (
+      <Fragment>
+        {showSearch && (
+          <HeaderSlotLeft>
+            <SearchInput className="brz-ed-popup-two-header__search" />
+          </HeaderSlotLeft>
+        )}
+        {showSidebar && (
+          <div className="brz-ed-popup-two-body__sidebar">
+            <div className="brz-ed-popup-two-sidebar-body" />
+          </div>
+        )}
+        <div className="brz-ed-popup-two-body__content brz-ed-popup-two-body__content--loading">
+          <EditorIcon icon="nc-circle-02" className="brz-ed-animated--spin" />
+        </div>
+      </Fragment>
+    );
+  }
+
+  render() {
+    const { data, blocks, categories: categories_ } = this.state;
+
+    if (!data) {
+      return this.renderLoading();
+    }
+
+    const {
+      showSearch,
+      showSidebar,
+      showType,
+      showCategories,
+      HeaderSlotLeft
+    } = this.props;
+    const thumbnails = blocks.map(block => ({
+      ...block,
+      thumbnailSrc: blockTemplateThumbnailUrl(block)
+    }));
+    const filterFn = (item, currentFilter) => {
+      const typeMatch = currentFilter.type === item.type;
+
+      const categoryMatch =
+        currentFilter.category === "*" ||
+        item.cat.includes(Number(currentFilter.category));
+
+      const searchMatch =
+        currentFilter.search === "" ||
+        new RegExp(
+          currentFilter.search.replace(/[.*+?^${}()|[\]\\]/g, ""),
+          "i"
+        ).test(item.keywords);
+
+      return typeMatch && categoryMatch && searchMatch;
+    };
+
+    const countersColorBlocks = {};
+    const countersSectionBlocks = {};
+    const categories = categories_.filter(({ hidden }) => hidden !== true);
 
     return (
       <DataFilter
@@ -87,9 +157,9 @@ export default class Blocks extends React.Component {
           defaultFilter.type = currentFilter.type;
 
           if (!countersColorBlocks[currentFilter.type]) {
-            for (let i = 0; i < blocksArr.length; i++) {
-              const blockType = blocksArr[i].type; // dark | light
-              const blockCategories = blocksArr[i].cat; // header | footer etc.
+            for (let i = 0; i < blocks.length; i++) {
+              const blockType = blocks[i].type; // dark | light
+              const blockCategories = blocks[i].cat; // header | footer etc.
 
               if (countersColorBlocks[blockType] === undefined) {
                 countersColorBlocks[blockType] = 1;
@@ -114,8 +184,8 @@ export default class Blocks extends React.Component {
           }
 
           return (
-            <React.Fragment>
-              {filterUI.search && (
+            <Fragment>
+              {showSearch && (
                 <HeaderSlotLeft>
                   <SearchInput
                     className="brz-ed-popup-two-header__search"
@@ -124,7 +194,7 @@ export default class Blocks extends React.Component {
                   />
                 </HeaderSlotLeft>
               )}
-              {filterUI.sidebar && (
+              {showSidebar && (
                 <div className="brz-ed-popup-two-body__sidebar">
                   <ScrollPane
                     style={{
@@ -134,16 +204,16 @@ export default class Blocks extends React.Component {
                     className="brz-ed-scroll--new-dark brz-ed-scroll--medium"
                   >
                     <div className="brz-ed-popup-two-sidebar-body">
-                      {filterUI.type && (
+                      {showType && (
                         <Sidebar
                           title="STYLES"
-                          options={types}
+                          options={data.types}
                           counters={countersColorBlocks}
                           value={currentFilter.type}
                           onChange={value => setFilter({ type: value })}
                         />
                       )}
-                      {filterUI.categories && (
+                      {showCategories && (
                         <Sidebar
                           options={categories}
                           counters={countersSectionBlocks}
@@ -155,7 +225,6 @@ export default class Blocks extends React.Component {
                   </ScrollPane>
                 </div>
               )}
-
               <div className="brz-ed-popup-two-body__content">
                 <ScrollPane
                   style={{
@@ -164,7 +233,7 @@ export default class Blocks extends React.Component {
                   }}
                   className="brz-ed-scroll--new-dark brz-ed-scroll--medium"
                 >
-                  {filteredThumbnails.length > 1 ? (
+                  {filteredThumbnails.length > 0 ? (
                     <ThumbnailGrid
                       data={filteredThumbnails}
                       onThumbnailAdd={this.handleThumbnailAdd}
@@ -178,10 +247,20 @@ export default class Blocks extends React.Component {
                   )}
                 </ScrollPane>
               </div>
-            </React.Fragment>
+            </Fragment>
           );
         }}
       </DataFilter>
     );
   }
 }
+
+const mapStateToProps = state => ({
+  selectedKit: projectSelector(state).data.selectedKit,
+  projectFonts: fontSelector(state)
+});
+
+export default connect(
+  mapStateToProps,
+  null
+)(Blocks);

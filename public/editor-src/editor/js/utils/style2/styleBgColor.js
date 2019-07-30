@@ -57,5 +57,5 @@ export function styleBgColor({ v, device, state, prefix = "bg" }) {
     ? hexToRgba(hoverBgColorHex, hoverBgColorOpacity)
     : bgColorType === "solid"
     ? hexToRgba(bgColorHex, bgColorOpacity)
-    : "transparent";
+    : undefined;
 }

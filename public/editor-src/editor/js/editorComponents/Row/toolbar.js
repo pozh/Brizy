@@ -17,24 +17,18 @@ import {
   toolbarBgVideoLoop,
   toolbarBgMapAddress,
   toolbarBgMapZoom,
-  toolbarBorderStyle,
-  toolbarBorderWidth,
-  toolbarBorderWidthBorderColorPicker,
   toolbarBorderRadius,
-  toolbarGradientRange,
+  toolbarBorderColor2,
+  toolbarBorderColorHexField2,
+  toolbarBorderWidthBorderColorPicker2,
   toolbarGradientType,
+  toolbarBgColor2,
+  toolbarBgColorHexField2,
   toolbarGradientLinearDegree,
   toolbarGradientRadialDegree,
-  toolbarBgColorHexAndOpacity,
-  toolbarBgColorPalette,
-  toolbarBgColorFields,
-  toolbarBorderColorHexAndOpacity,
-  toolbarBorderColorPalette,
-  toolbarBorderColorFields,
-  toolbarBoxShadowHexAndOpacity,
-  toolbarBoxShadowPalette,
-  toolbarBoxShadowFields,
-  toolbarBoxShadow,
+  toolbarBoxShadow2,
+  toolbarBoxShadowHexField2,
+  toolbarBoxShadowFields2,
   toolbarHoverTransition,
   toolbarShowOnDesktop,
   toolbarShowOnTablet,
@@ -42,9 +36,7 @@ import {
   toolbarZIndex,
   toolbarCustomCSSClass,
   toolbarEntranceAnimation,
-  toolbarBgType,
   toolbarElementContainerTypeImageMap,
-  toolbarCustomCSS,
   toolbarImageLinkExternal,
   toolbarLinkExternalBlank,
   toolbarLinkExternalRel,
@@ -99,7 +91,6 @@ export function getItemsForDesktop(v, component) {
                             "onChangeBgImage",
                             "onChangeBgImageBgOpacity",
                             "onChangeBgImageDependencies",
-                            "onChangeBgImageColumnAndRowSyncTablet",
                             "onChangeBgImageColumnAndRowSyncMobile"
                           ]
                         }),
@@ -115,47 +106,6 @@ export function getItemsForDesktop(v, component) {
                         toolbarBgMapAddress({ v, disabled: v.media !== "map" }),
                         toolbarBgMapZoom({ v, disabled: v.media !== "map" })
                       ]
-                    },
-                    {
-                      id: "tabCurrentElementStyling",
-                      label: t("Styling"),
-                      options: [
-                        toolbarBorderStyle({
-                          v,
-                          device,
-                          state: "normal",
-                          onChange: [
-                            "onChangeBorderStyle",
-                            "onChangeBorderStyleDependencies"
-                          ]
-                        }),
-                        toolbarBorderWidth({
-                          v,
-                          device,
-                          state: "normal",
-                          onChangeGrouped: [
-                            "onChangeBorderWidthGrouped",
-                            "onChangeBorderWidthGroupedDependencies"
-                          ],
-                          onChangeUngrouped: [
-                            "onChangeBorderWidthUngrouped",
-                            "onChangeBorderWidthUngroupedDependencies"
-                          ]
-                        }),
-                        toolbarBorderRadius({
-                          v,
-                          device,
-                          state: "normal",
-                          onChangeGrouped: [
-                            "onChangeBorderRadiusGrouped",
-                            "onChangeBorderRadiusGroupedDependencies"
-                          ],
-                          onChangeUngrouped: [
-                            "onChangeBorderRadiusUngrouped",
-                            "onChangeBorderRadiusUngroupedDependencies"
-                          ]
-                        })
-                      ]
                     }
                   ]
                 }
@@ -165,13 +115,13 @@ export function getItemsForDesktop(v, component) {
               id: "tabHover",
               tabIcon: "nc-hover",
               title: t("Hover"),
-              disabled:
-                v.tabsCurrentElement === "tabCurrentElement" &&
-                (v.media === "video" || v.media === "map"),
               options: [
                 {
                   id: "tabsCurrentElement",
                   type: "tabs",
+                  disabled:
+                    v.tabsCurrentElement === "tabCurrentElement" &&
+                    (v.media === "video" || v.media === "map"),
                   value: v.tabsCurrentElement,
                   tabs: [
                     {
@@ -186,35 +136,8 @@ export function getItemsForDesktop(v, component) {
                             "onChangeBgImage",
                             "onChangeBgImageBgOpacity",
                             "onChangeBgImageDependencies",
-                            "onChangeBgImageColumnAndRowSyncTablet",
                             "onChangeBgImageColumnAndRowSyncMobile"
                           ]
-                        })
-                      ]
-                    },
-                    {
-                      id: "tabCurrentElementStyling",
-                      label: t("Styling"),
-                      options: [
-                        toolbarBorderStyle({
-                          v,
-                          device,
-                          state: "hover",
-                          onChange: ["onChangeBorderStyle"]
-                        }),
-                        toolbarBorderWidth({
-                          v,
-                          device,
-                          state: "hover",
-                          onChangeGrouped: ["onChangeBorderWidthGrouped"],
-                          onChangeUngrouped: ["onChangeBorderWidthUngrouped"]
-                        }),
-                        toolbarBorderRadius({
-                          v,
-                          device,
-                          state: "hover",
-                          onChangeGrouped: ["onChangeBorderRadiusGrouped"],
-                          onChangeUngrouped: ["onChangeBorderRadiusUngrouped"]
                         })
                       ]
                     }
@@ -226,7 +149,7 @@ export function getItemsForDesktop(v, component) {
         }
       ],
       onChange: (_, { isOpen }) => ({
-        tabsCurrentElement: !isOpen ? "tabCurrentElement" : v.tabsCurrentElement
+        tabsCurrentElement: !isOpen ? "" : v.tabsCurrentElement
       })
     },
     {
@@ -261,92 +184,36 @@ export function getItemsForDesktop(v, component) {
                       id: "tabOverlay",
                       label: t("Overlay"),
                       options: [
-                        {
-                          type: "grid",
-                          className: "brz-ed-grid__gradient",
-                          columns: [
-                            {
-                              width: 43,
-                              options: [
-                                toolbarBgType({ v, device, state: "normal" })
-                              ]
-                            },
-                            {
-                              width: 57,
-                              options: [
-                                toolbarGradientRange({
-                                  v,
-                                  device,
-                                  state: "normal",
-                                  disabled: v.bgColorType === "solid"
-                                })
-                              ]
-                            }
-                          ]
-                        },
-                        toolbarBgColorHexAndOpacity({
+                        toolbarBgColor2({
                           v,
                           device,
                           state: "normal",
-                          prefix: "bg",
-                          disabled:
-                            v.bgColorType === "gradient" &&
-                            v.gradientActivePointer === "finishPointer",
-                          onChange: [
-                            "onChangeBgColorHexAndOpacity",
-                            "onChangeBgColorHexAndOpacityPalette",
-                            "onChangeBgColorHexAndOpacityDependencies",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                          ]
-                        }),
-                        toolbarBgColorPalette({
-                          v,
-                          device,
-                          state: "normal",
-                          prefix: "bg",
-                          disabled:
-                            v.bgColorType === "gradient" &&
-                            v.gradientActivePointer === "finishPointer",
-                          onChange: [
-                            "onChangeBgColorPalette",
-                            "onChangeBgColorPaletteOpacity",
-                            "onChangeBgColorHexAndOpacityDependencies",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                          ]
-                        }),
-                        toolbarBgColorHexAndOpacity({
-                          v,
-                          device,
-                          state: "normal",
-                          prefix: "gradient",
-                          disabled:
-                            v.bgColorType === "solid" ||
-                            v.gradientActivePointer === "startPointer",
-                          onChange: [
-                            "onChangeBgColorHexAndOpacity",
-                            "onChangeBgColorHexAndOpacityPalette",
-                            "onChangeBgColorHexAndOpacityDependencies",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                          ]
-                        }),
-                        toolbarBgColorPalette({
-                          v,
-                          device,
-                          state: "normal",
-                          prefix: "gradient",
-                          disabled:
-                            v.bgColorType === "solid" ||
-                            v.gradientActivePointer === "startPointer",
-                          onChange: [
-                            "onChangeBgColorPalette",
-                            "onChangeBgColorPaletteOpacity",
-                            "onChangeBgColorHexAndOpacityDependencies",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                          ]
+                          onChangeType: ["onChangeBgColorType2"],
+                          onChangeHex: [
+                            "onChangeBgColorHexAndOpacity2",
+                            "onChangeBgColorHexAndOpacityPalette2",
+                            "onChangeBgColorHexAndOpacityDependencies2",
+                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
+                          ],
+                          onChangePalette: [
+                            "onChangeBgColorPalette2",
+                            "onChangeBgColorPaletteOpacity2",
+                            "onChangeBgColorHexAndOpacityDependencies2",
+                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
+                          ],
+                          onChangeGradientHex: [
+                            "onChangeBgColorHexAndOpacity2",
+                            "onChangeBgColorHexAndOpacityPalette2",
+                            "onChangeBgColorHexAndOpacityDependencies2",
+                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
+                          ],
+                          onChangeGradientPalette: [
+                            "onChangeBgColorPalette2",
+                            "onChangeBgColorPaletteOpacity2",
+                            "onChangeBgColorHexAndOpacityDependencies2",
+                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
+                          ],
+                          onChangeGradient: ["onChangeGradientRange2"]
                         }),
                         {
                           type: "grid",
@@ -355,36 +222,24 @@ export function getItemsForDesktop(v, component) {
                             {
                               width: 30,
                               options: [
-                                toolbarBgColorFields({
+                                toolbarBgColorHexField2({
                                   v,
                                   device,
                                   state: "normal",
-                                  prefix: "bg",
-                                  disabled:
-                                    v.bgColorType === "gradient" &&
-                                    v.gradientActivePointer === "finishPointer",
+                                  prefix:
+                                    defaultValueValue({
+                                      v,
+                                      key: "gradientActivePointer",
+                                      device,
+                                      state: "normal"
+                                    }) === "startPointer"
+                                      ? "bg"
+                                      : "gradient",
                                   onChange: [
-                                    "onChangeBgColorHexAndOpacity",
-                                    "onChangeBgColorHexAndOpacityPalette",
-                                    "onChangeBgColorHexAndOpacityDependencies",
-                                    "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet",
-                                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                                  ]
-                                }),
-                                toolbarBgColorFields({
-                                  v,
-                                  device,
-                                  state: "normal",
-                                  prefix: "gradient",
-                                  disabled:
-                                    v.bgColorType === "solid" ||
-                                    v.gradientActivePointer === "startPointer",
-                                  onChange: [
-                                    "onChangeBgColorHexAndOpacity",
-                                    "onChangeBgColorHexAndOpacityPalette",
-                                    "onChangeBgColorHexAndOpacityDependencies",
-                                    "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet",
-                                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
+                                    "onChangeBgColorHexAndOpacity2",
+                                    "onChangeBgColorHexAndOpacityPalette2",
+                                    "onChangeBgColorHexAndOpacityDependencies2",
+                                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
                                   ]
                                 })
                               ]
@@ -398,7 +253,13 @@ export function getItemsForDesktop(v, component) {
                                   state: "normal",
                                   className:
                                     "brz-ed__select--transparent brz-ed__select--align-right",
-                                  disabled: v.bgColorType === "solid"
+                                  disabled:
+                                    defaultValueValue({
+                                      v,
+                                      key: "bgColorType",
+                                      device,
+                                      state: "normal"
+                                    }) === "solid"
                                 })
                               ]
                             },
@@ -410,16 +271,36 @@ export function getItemsForDesktop(v, component) {
                                   device,
                                   state: "normal",
                                   disabled:
-                                    v.bgColorType === "solid" ||
-                                    v.gradientType === "radial"
+                                    defaultValueValue({
+                                      v,
+                                      key: "bgColorType",
+                                      device,
+                                      state: "normal"
+                                    }) === "solid" ||
+                                    defaultValueValue({
+                                      v,
+                                      key: "gradientType",
+                                      device,
+                                      state: "normal"
+                                    }) === "radial"
                                 }),
                                 toolbarGradientRadialDegree({
                                   v,
                                   device,
                                   state: "normal",
                                   disabled:
-                                    v.bgColorType === "solid" ||
-                                    v.gradientType === "linear"
+                                    defaultValueValue({
+                                      v,
+                                      key: "bgColorType",
+                                      device,
+                                      state: "normal"
+                                    }) === "solid" ||
+                                    defaultValueValue({
+                                      v,
+                                      key: "gradientType",
+                                      device,
+                                      state: "normal"
+                                    }) === "linear"
                                 })
                               ]
                             }
@@ -431,28 +312,27 @@ export function getItemsForDesktop(v, component) {
                       id: "tabBorder",
                       label: t("Border"),
                       options: [
-                        toolbarBorderColorHexAndOpacity({
+                        toolbarBorderColor2({
                           v,
                           device,
                           state: "normal",
-                          onChange: [
-                            "onChangeBorderColorHexAndOpacity",
-                            "onChangeBorderColorHexAndOpacityPalette",
-                            "onChangeBorderColorHexAndOpacityDependencies",
-                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet",
-                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile"
-                          ]
-                        }),
-                        toolbarBorderColorPalette({
-                          v,
-                          device,
-                          state: "normal",
-                          onChange: [
-                            "onChangeBorderColorPalette",
-                            "onChangeBorderColorPaletteOpacity",
-                            "onChangeBorderColorHexAndOpacityDependencies",
-                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet",
-                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile"
+                          onChangeStyle: [
+                            "onChangeBorderStyle2",
+                            "onChangeContainerBorderStyleDependencies2"
+                          ],
+                          onChangeHex: [
+                            "onChangeBorderColorHexAndOpacity2",
+                            "onChangeBorderColorHexAndOpacityPalette2",
+                            "onChangeContainerBorderColorHexAndOpacityDependencies2",
+                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet2",
+                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile2"
+                          ],
+                          onChangePalette: [
+                            "onChangeBorderColorPalette2",
+                            "onChangeBorderColorPaletteOpacity2",
+                            "onChangeContainerBorderColorHexAndOpacityDependencies2",
+                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet2",
+                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile2"
                           ]
                         }),
                         {
@@ -460,32 +340,37 @@ export function getItemsForDesktop(v, component) {
                           className: "brz-ed-grid__color-fileds",
                           columns: [
                             {
-                              width: 51,
+                              width: 38,
                               options: [
-                                toolbarBorderColorFields({
+                                toolbarBorderColorHexField2({
                                   v,
                                   device,
                                   state: "normal",
                                   onChange: [
-                                    "onChangeBorderColorHexAndOpacity",
-                                    "onChangeBorderColorHexAndOpacityPalette",
-                                    "onChangeBorderColorHexAndOpacityDependencies",
-                                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet",
-                                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile"
+                                    "onChangeBorderColorHexAndOpacity2",
+                                    "onChangeBorderColorHexAndOpacityPalette2",
+                                    "onChangeContainerBorderColorHexAndOpacityDependencies2",
+                                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet2",
+                                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile2"
                                   ]
                                 })
                               ]
                             },
                             {
-                              width: 49,
+                              width: 54,
                               options: [
-                                toolbarBorderWidthBorderColorPicker({
+                                toolbarBorderWidthBorderColorPicker2({
                                   v,
                                   device,
                                   state: "normal",
-                                  onChange: [
-                                    "onChangeBorderWidthGrouped",
-                                    "onChangeBorderWidthGroupedDependencies"
+                                  onChangeType: ["onChangeBorderWidthType2"],
+                                  onChangeGrouped: [
+                                    "onChangeBorderWidthGrouped2",
+                                    "onChangeBorderWidthGroupedDependencies2"
+                                  ],
+                                  onChangeUngrouped: [
+                                    "onChangeBorderWidthUngrouped2",
+                                    "onChangeBorderWidthUngroupedDependencies2"
                                   ]
                                 })
                               ]
@@ -498,24 +383,23 @@ export function getItemsForDesktop(v, component) {
                       id: "tabBoxShadow",
                       label: t("Shadow"),
                       options: [
-                        toolbarBoxShadowHexAndOpacity({
+                        toolbarBoxShadow2({
                           v,
                           device,
                           state: "normal",
-                          onChange: [
-                            "onChangeBoxShadowHexAndOpacity",
-                            "onChangeBoxShadowHexAndOpacityPalette",
-                            "onChangeBoxShadowHexAndOpacityDependencies"
-                          ]
-                        }),
-                        toolbarBoxShadowPalette({
-                          v,
-                          device,
-                          state: "normal",
-                          onChange: [
-                            "onChangeBoxShadowPalette",
-                            "onChangeBoxShadowPaletteOpacity",
-                            "onChangeBoxShadowHexAndOpacityDependencies"
+                          onChangeStyle: [
+                            "onChangeBoxShadowStyle2",
+                            "onChangeBoxShadowStyleDependencies2"
+                          ],
+                          onChangeHex: [
+                            "onChangeBoxShadowHexAndOpacity2",
+                            "onChangeBoxShadowHexAndOpacityPalette2",
+                            "onChangeBoxShadowHexAndOpacityDependencies2"
+                          ],
+                          onChangePalette: [
+                            "onChangeBoxShadowPalette2",
+                            "onChangeBoxShadowPaletteOpacity2",
+                            "onChangeBoxShadowHexAndOpacityDependencies2"
                           ]
                         }),
                         {
@@ -525,14 +409,14 @@ export function getItemsForDesktop(v, component) {
                             {
                               width: 41,
                               options: [
-                                toolbarBoxShadowFields({
+                                toolbarBoxShadowHexField2({
                                   v,
                                   device,
                                   state: "normal",
                                   onChange: [
-                                    "onChangeBoxShadowHexAndOpacity",
-                                    "onChangeBoxShadowHexAndOpacityPalette",
-                                    "onChangeBoxShadowHexAndOpacityDependencies"
+                                    "onChangeBoxShadowHexAndOpacity2",
+                                    "onChangeBoxShadowHexAndOpacityPalette2",
+                                    "onChangeBoxShadowHexAndOpacityDependencies2"
                                   ]
                                 })
                               ]
@@ -540,10 +424,14 @@ export function getItemsForDesktop(v, component) {
                             {
                               width: 59,
                               options: [
-                                toolbarBoxShadow({
+                                toolbarBoxShadowFields2({
                                   v,
                                   device,
-                                  state: "normal"
+                                  state: "normal",
+                                  onChange: [
+                                    "onChangeBoxShadow2",
+                                    "onChangeBoxShadowDependencies2"
+                                  ]
                                 })
                               ]
                             }
@@ -569,136 +457,32 @@ export function getItemsForDesktop(v, component) {
                       id: "tabOverlay",
                       label: t("Overlay"),
                       options: [
-                        {
-                          type: "grid",
-                          className: "brz-ed-grid__gradient",
-                          columns: [
-                            {
-                              width: 43,
-                              options: [
-                                toolbarBgType({ v, device, state: "hover" })
-                              ]
-                            },
-                            {
-                              width: 57,
-                              options: [
-                                toolbarGradientRange({
-                                  v,
-                                  device,
-                                  state: "hover",
-                                  disabled:
-                                    defaultValueValue({
-                                      v,
-                                      key: "bgColorType",
-                                      device,
-                                      state: "hover"
-                                    }) === "solid"
-                                })
-                              ]
-                            }
-                          ]
-                        },
-                        toolbarBgColorHexAndOpacity({
+                        toolbarBgColor2({
                           v,
                           device,
                           state: "hover",
-                          prefix: "bg",
-                          disabled:
-                            defaultValueValue({
-                              v,
-                              key: "bgColorType",
-                              device,
-                              state: "hover"
-                            }) === "gradient" &&
-                            defaultValueValue({
-                              v,
-                              key: "gradientActivePointer",
-                              device,
-                              state: "hover"
-                            }) === "finishPointer",
-                          onChange: [
-                            "onChangeBgColorHexAndOpacity",
-                            "onChangeBgColorHexAndOpacityPalette",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                          ]
-                        }),
-                        toolbarBgColorPalette({
-                          v,
-                          device,
-                          state: "hover",
-                          prefix: "bg",
-                          disabled:
-                            defaultValueValue({
-                              v,
-                              key: "bgColorType",
-                              device,
-                              state: "hover"
-                            }) === "gradient" &&
-                            defaultValueValue({
-                              v,
-                              key: "gradientActivePointer",
-                              device,
-                              state: "hover"
-                            }) === "finishPointer",
-                          onChange: [
-                            "onChangeBgColorPalette",
-                            "onChangeBgColorPaletteOpacity",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                          ]
-                        }),
-                        toolbarBgColorHexAndOpacity({
-                          v,
-                          device,
-                          state: "hover",
-                          prefix: "gradient",
-                          disabled:
-                            defaultValueValue({
-                              v,
-                              key: "bgColorType",
-                              device,
-                              state: "hover"
-                            }) === "solid" ||
-                            defaultValueValue({
-                              v,
-                              key: "gradientActivePointer",
-                              device,
-                              state: "hover"
-                            }) === "startPointer",
-                          onChange: [
-                            "onChangeBgColorHexAndOpacity",
-                            "onChangeBgColorHexAndOpacityPalette",
-                            "onChangeBgColorHexAndOpacityDependencies",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                          ]
-                        }),
-                        toolbarBgColorPalette({
-                          v,
-                          device,
-                          state: "hover",
-                          prefix: "gradient",
-                          disabled:
-                            defaultValueValue({
-                              v,
-                              key: "bgColorType",
-                              device,
-                              state: "hover"
-                            }) === "solid" ||
-                            defaultValueValue({
-                              v,
-                              key: "gradientActivePointer",
-                              device,
-                              state: "hover"
-                            }) === "startPointer",
-                          onChange: [
-                            "onChangeBgColorPalette",
-                            "onChangeBgColorPaletteOpacity",
-                            "onChangeBgColorHexAndOpacityDependencies",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                          ]
+                          onChangeType: ["onChangeBgColorType2"],
+                          onChangeHex: [
+                            "onChangeBgColorHexAndOpacity2",
+                            "onChangeBgColorHexAndOpacityPalette2",
+                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
+                          ],
+                          onChangePalette: [
+                            "onChangeBgColorPalette2",
+                            "onChangeBgColorPaletteOpacity2",
+                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
+                          ],
+                          onChangeGradientHex: [
+                            "onChangeBgColorHexAndOpacity2",
+                            "onChangeBgColorHexAndOpacityPalette2",
+                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
+                          ],
+                          onChangeGradientPalette: [
+                            "onChangeBgColorPalette2",
+                            "onChangeBgColorPaletteOpacity2",
+                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
+                          ],
+                          onChangeGradient: ["onChangeGradientRange2"]
                         }),
                         {
                           type: "grid",
@@ -707,55 +491,23 @@ export function getItemsForDesktop(v, component) {
                             {
                               width: 30,
                               options: [
-                                toolbarBgColorFields({
+                                toolbarBgColorHexField2({
                                   v,
                                   device,
                                   state: "hover",
-                                  prefix: "bg",
-                                  disabled:
-                                    defaultValueValue({
-                                      v,
-                                      key: "bgColorType",
-                                      device,
-                                      state: "hover"
-                                    }) === "gradient" &&
+                                  prefix:
                                     defaultValueValue({
                                       v,
                                       key: "gradientActivePointer",
                                       device,
                                       state: "hover"
-                                    }) === "finishPointer",
+                                    }) === "startPointer"
+                                      ? "bg"
+                                      : "gradient",
                                   onChange: [
-                                    "onChangeBgColorHexAndOpacity",
-                                    "onChangeBgColorHexAndOpacityPalette",
-                                    "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet",
-                                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                                  ]
-                                }),
-                                toolbarBgColorFields({
-                                  v,
-                                  device,
-                                  state: "hover",
-                                  prefix: "gradient",
-                                  disabled:
-                                    defaultValueValue({
-                                      v,
-                                      key: "bgColorType",
-                                      device,
-                                      state: "hover"
-                                    }) === "solid" ||
-                                    defaultValueValue({
-                                      v,
-                                      key: "gradientActivePointer",
-                                      device,
-                                      state: "hover"
-                                    }) === "startPointer",
-                                  onChange: [
-                                    "onChangeBgColorHexAndOpacity",
-                                    "onChangeBgColorHexAndOpacityPalette",
-                                    "onChangeBgColorHexAndOpacityDependencies",
-                                    "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet",
-                                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
+                                    "onChangeBgColorHexAndOpacity2",
+                                    "onChangeBgColorHexAndOpacityPalette2",
+                                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
                                   ]
                                 })
                               ]
@@ -828,26 +580,27 @@ export function getItemsForDesktop(v, component) {
                       id: "tabBorder",
                       label: t("Border"),
                       options: [
-                        toolbarBorderColorHexAndOpacity({
+                        toolbarBorderColor2({
                           v,
                           device,
                           state: "hover",
-                          onChange: [
-                            "onChangeBorderColorHexAndOpacity",
-                            "onChangeBorderColorHexAndOpacityPalette",
-                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet",
-                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile"
-                          ]
-                        }),
-                        toolbarBorderColorPalette({
-                          v,
-                          device,
-                          state: "hover",
-                          onChange: [
-                            "onChangeBorderColorPalette",
-                            "onChangeBorderColorPaletteOpacity",
-                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet",
-                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile"
+                          onChangeStyle: [
+                            "onChangeBorderStyle2",
+                            "onChangeContainerBorderStyleDependencies2"
+                          ],
+                          onChangeHex: [
+                            "onChangeBorderColorHexAndOpacity2",
+                            "onChangeBorderColorHexAndOpacityPalette2",
+                            "onChangeContainerBorderColorHexAndOpacityDependencies2",
+                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet2",
+                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile2"
+                          ],
+                          onChangePalette: [
+                            "onChangeBorderColorPalette2",
+                            "onChangeBorderColorPaletteOpacity2",
+                            "onChangeContainerBorderColorHexAndOpacityDependencies2",
+                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet2",
+                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile2"
                           ]
                         }),
                         {
@@ -855,29 +608,38 @@ export function getItemsForDesktop(v, component) {
                           className: "brz-ed-grid__color-fileds",
                           columns: [
                             {
-                              width: 51,
+                              width: 38,
                               options: [
-                                toolbarBorderColorFields({
+                                toolbarBorderColorHexField2({
                                   v,
                                   device,
                                   state: "hover",
                                   onChange: [
-                                    "onChangeBorderColorHexAndOpacity",
-                                    "onChangeBorderColorHexAndOpacityPalette",
-                                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet",
-                                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile"
+                                    "onChangeBorderColorHexAndOpacity2",
+                                    "onChangeBorderColorHexAndOpacityPalette2",
+                                    "onChangeContainerBorderColorHexAndOpacityDependencies2",
+                                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet2",
+                                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile2"
                                   ]
                                 })
                               ]
                             },
                             {
-                              width: 49,
+                              width: 54,
                               options: [
-                                toolbarBorderWidthBorderColorPicker({
+                                toolbarBorderWidthBorderColorPicker2({
                                   v,
                                   device,
                                   state: "hover",
-                                  onChange: ["onChangeBorderWidthGrouped"]
+                                  onChangeType: ["onChangeBorderWidthType2"],
+                                  onChangeGrouped: [
+                                    "onChangeBorderWidthGrouped2",
+                                    "onChangeBorderWidthGroupedDependencies2"
+                                  ],
+                                  onChangeUngrouped: [
+                                    "onChangeBorderWidthUngrouped2",
+                                    "onChangeBorderWidthUngroupedDependencies2"
+                                  ]
                                 })
                               ]
                             }
@@ -889,24 +651,23 @@ export function getItemsForDesktop(v, component) {
                       id: "tabBoxShadow",
                       label: t("Shadow"),
                       options: [
-                        toolbarBoxShadowHexAndOpacity({
+                        toolbarBoxShadow2({
                           v,
                           device,
                           state: "hover",
-                          onChange: [
-                            "onChangeBoxShadowHexAndOpacity",
-                            "onChangeBoxShadowHexAndOpacityPalette",
-                            "onChangeBoxShadowHexAndOpacityDependencies"
-                          ]
-                        }),
-                        toolbarBoxShadowPalette({
-                          v,
-                          device,
-                          state: "hover",
-                          onChange: [
-                            "onChangeBoxShadowPalette",
-                            "onChangeBoxShadowPaletteOpacity",
-                            "onChangeBoxShadowHexAndOpacityDependencies"
+                          onChangeStyle: [
+                            "onChangeBoxShadowStyle2",
+                            "onChangeBoxShadowStyleDependencies2"
+                          ],
+                          onChangeHex: [
+                            "onChangeBoxShadowHexAndOpacity2",
+                            "onChangeBoxShadowHexAndOpacityPalette2",
+                            "onChangeBoxShadowHexAndOpacityDependencies2"
+                          ],
+                          onChangePalette: [
+                            "onChangeBoxShadowPalette2",
+                            "onChangeBoxShadowPaletteOpacity2",
+                            "onChangeBoxShadowHexAndOpacityDependencies2"
                           ]
                         }),
                         {
@@ -916,14 +677,14 @@ export function getItemsForDesktop(v, component) {
                             {
                               width: 41,
                               options: [
-                                toolbarBoxShadowFields({
+                                toolbarBoxShadowHexField2({
                                   v,
                                   device,
                                   state: "hover",
                                   onChange: [
-                                    "onChangeBoxShadowHexAndOpacity",
-                                    "onChangeBoxShadowHexAndOpacityPalette",
-                                    "onChangeBoxShadowHexAndOpacityDependencies"
+                                    "onChangeBoxShadowHexAndOpacity2",
+                                    "onChangeBoxShadowHexAndOpacityPalette2",
+                                    "onChangeBoxShadowHexAndOpacityDependencies2"
                                   ]
                                 })
                               ]
@@ -931,10 +692,14 @@ export function getItemsForDesktop(v, component) {
                             {
                               width: 59,
                               options: [
-                                toolbarBoxShadow({
+                                toolbarBoxShadowFields2({
                                   v,
                                   device,
-                                  state: "hover"
+                                  state: "hover",
+                                  onChange: [
+                                    "onChangeBoxShadow2",
+                                    "onChangeBoxShadowDependencies2"
+                                  ]
                                 })
                               ]
                             }
@@ -950,7 +715,8 @@ export function getItemsForDesktop(v, component) {
         }
       ],
       onChange: (_, { isOpen }) => ({
-        tabsColor: !isOpen ? "tabOverlay" : v.tabsColor
+        tabsState: !isOpen ? "" : v.tabsState,
+        tabsColor: !isOpen ? "" : v.tabsColor
       })
     },
     {
@@ -1504,7 +1270,20 @@ export function getItemsForDesktop(v, component) {
                           }
                         ]
                       }
-                    }
+                    },
+                    toolbarBorderRadius({
+                      v,
+                      device,
+                      state: "normal",
+                      onChangeGrouped: [
+                        "onChangeBorderRadiusGrouped",
+                        "onChangeBorderRadiusGroupedDependencies"
+                      ],
+                      onChangeUngrouped: [
+                        "onChangeBorderRadiusUngrouped",
+                        "onChangeBorderRadiusUngroupedDependencies"
+                      ]
+                    })
                   ]
                 },
                 {
@@ -1567,52 +1346,10 @@ export function getItemsForTablet(v, component) {
                   onChange: [
                     "onChangeBgImage",
                     "onChangeBgImageBgOpacity",
-                    "onChangeBgImageDependencies",
-                    "onChangeBgImageColumnAndRowSyncTablet"
+                    "onChangeBgImageDependencies"
                   ]
                 }),
                 toolbarBgMapZoom({ v, disabled: v.media !== "map" })
-              ]
-            },
-            {
-              id: "tabletTabCurrentElementStyling",
-              label: t("Styling"),
-              options: [
-                toolbarBorderStyle({
-                  v,
-                  device,
-                  state,
-                  onChange: [
-                    "onChangeBorderStyle",
-                    "onChangeBorderStyleDependencies"
-                  ]
-                }),
-                toolbarBorderWidth({
-                  v,
-                  device,
-                  state,
-                  onChangeGrouped: [
-                    "onChangeBorderWidthGrouped",
-                    "onChangeBorderWidthGroupedDependencies"
-                  ],
-                  onChangeUngrouped: [
-                    "onChangeBorderWidthUngrouped",
-                    "onChangeBorderWidthUngroupedDependencies"
-                  ]
-                }),
-                toolbarBorderRadius({
-                  v,
-                  device,
-                  state,
-                  onChangeGrouped: [
-                    "onChangeBorderRadiusGrouped",
-                    "onChangeBorderRadiusGroupedDependencies"
-                  ],
-                  onChangeUngrouped: [
-                    "onChangeBorderRadiusUngrouped",
-                    "onChangeBorderRadiusUngroupedDependencies"
-                  ]
-                })
               ]
             }
           ]
@@ -1642,91 +1379,32 @@ export function getItemsForTablet(v, component) {
               id: "tabletTabOverlay",
               label: t("Overlay"),
               options: [
-                {
-                  type: "grid",
-                  className: "brz-ed-grid__gradient",
-                  columns: [
-                    {
-                      width: 43,
-                      options: [toolbarBgType({ v, device, state })]
-                    },
-                    {
-                      width: 57,
-                      options: [
-                        toolbarGradientRange({
-                          v,
-                          device,
-                          state,
-                          disabled:
-                            tabletSyncOnChange(v, "bgColorType") === "solid"
-                        })
-                      ]
-                    }
-                  ]
-                },
-                toolbarBgColorHexAndOpacity({
+                toolbarBgColor2({
                   v,
                   device,
                   state,
-                  prefix: "bg",
-                  disabled:
-                    tabletSyncOnChange(v, "bgColorType") === "gradient" &&
-                    tabletSyncOnChange(v, "gradientActivePointer") ===
-                      "finishPointer",
-                  onChange: [
-                    "onChangeBgColorHexAndOpacity",
-                    "onChangeBgColorHexAndOpacityPalette",
-                    "onChangeBgColorHexAndOpacityDependencies",
-                    "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet"
-                  ]
-                }),
-                toolbarBgColorPalette({
-                  v,
-                  device,
-                  state,
-                  prefix: "bg",
-                  disabled:
-                    tabletSyncOnChange(v, "bgColorType") === "gradient" &&
-                    tabletSyncOnChange(v, "gradientActivePointer") ===
-                      "finishPointer",
-                  onChange: [
-                    "onChangeBgColorPalette",
-                    "onChangeBgColorPaletteOpacity",
-                    "onChangeBgColorHexAndOpacityDependencies",
-                    "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet"
-                  ]
-                }),
-                toolbarBgColorHexAndOpacity({
-                  v,
-                  device,
-                  state,
-                  prefix: "gradient",
-                  disabled:
-                    tabletSyncOnChange(v, "bgColorType") === "solid" ||
-                    tabletSyncOnChange(v, "gradientActivePointer") ===
-                      "startPointer",
-                  onChange: [
-                    "onChangeBgColorHexAndOpacity",
-                    "onChangeBgColorHexAndOpacityPalette",
-                    "onChangeBgColorHexAndOpacityDependencies",
-                    "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet"
-                  ]
-                }),
-                toolbarBgColorPalette({
-                  v,
-                  device,
-                  state,
-                  prefix: "gradient",
-                  disabled:
-                    tabletSyncOnChange(v, "bgColorType") === "solid" ||
-                    tabletSyncOnChange(v, "gradientActivePointer") ===
-                      "startPointer",
-                  onChange: [
-                    "onChangeBgColorPalette",
-                    "onChangeBgColorPaletteOpacity",
-                    "onChangeBgColorHexAndOpacityDependencies",
-                    "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet"
-                  ]
+                  onChangeType: ["onChangeBgColorType2"],
+                  onChangeHex: [
+                    "onChangeBgColorHexAndOpacity2",
+                    "onChangeBgColorHexAndOpacityPalette2",
+                    "onChangeBgColorHexAndOpacityDependencies2"
+                  ],
+                  onChangePalette: [
+                    "onChangeBgColorPalette2",
+                    "onChangeBgColorPaletteOpacity2",
+                    "onChangeBgColorHexAndOpacityDependencies2"
+                  ],
+                  onChangeGradientHex: [
+                    "onChangeBgColorHexAndOpacity2",
+                    "onChangeBgColorHexAndOpacityPalette2",
+                    "onChangeBgColorHexAndOpacityDependencies2"
+                  ],
+                  onChangeGradientPalette: [
+                    "onChangeBgColorPalette2",
+                    "onChangeBgColorPaletteOpacity2",
+                    "onChangeBgColorHexAndOpacityDependencies2"
+                  ],
+                  onChangeGradient: ["onChangeGradientRange2"]
                 }),
                 {
                   type: "grid",
@@ -1735,37 +1413,23 @@ export function getItemsForTablet(v, component) {
                     {
                       width: 30,
                       options: [
-                        toolbarBgColorFields({
+                        toolbarBgColorHexField2({
                           v,
                           device,
                           state,
-                          prefix: "bg",
-                          disabled:
-                            tabletSyncOnChange(v, "bgColorType") ===
-                              "gradient" &&
-                            tabletSyncOnChange(v, "gradientActivePointer") ===
-                              "finishPointer",
+                          prefix:
+                            defaultValueValue({
+                              v,
+                              key: "gradientActivePointer",
+                              device,
+                              state
+                            }) === "startPointer"
+                              ? "bg"
+                              : "gradient",
                           onChange: [
-                            "onChangeBgColorHexAndOpacity",
-                            "onChangeBgColorHexAndOpacityPalette",
-                            "onChangeBgColorHexAndOpacityDependencies",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet"
-                          ]
-                        }),
-                        toolbarBgColorFields({
-                          v,
-                          device,
-                          state,
-                          prefix: "gradient",
-                          disabled:
-                            tabletSyncOnChange(v, "bgColorType") === "solid" ||
-                            tabletSyncOnChange(v, "gradientActivePointer") ===
-                              "startPointer",
-                          onChange: [
-                            "onChangeBgColorHexAndOpacity",
-                            "onChangeBgColorHexAndOpacityPalette",
-                            "onChangeBgColorHexAndOpacityDependencies",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncTablet"
+                            "onChangeBgColorHexAndOpacity2",
+                            "onChangeBgColorHexAndOpacityPalette2",
+                            "onChangeBgColorHexAndOpacityDependencies2"
                           ]
                         })
                       ]
@@ -1780,7 +1444,12 @@ export function getItemsForTablet(v, component) {
                           className:
                             "brz-ed__select--transparent brz-ed__select--align-right",
                           disabled:
-                            tabletSyncOnChange(v, "bgColorType") === "solid"
+                            defaultValueValue({
+                              v,
+                              key: "bgColorType",
+                              device,
+                              state
+                            }) === "solid"
                         })
                       ]
                     },
@@ -1792,16 +1461,36 @@ export function getItemsForTablet(v, component) {
                           device,
                           state,
                           disabled:
-                            tabletSyncOnChange(v, "bgColorType") === "solid" ||
-                            tabletSyncOnChange(v, "gradientType") === "radial"
+                            defaultValueValue({
+                              v,
+                              key: "bgColorType",
+                              device,
+                              state
+                            }) === "solid" ||
+                            defaultValueValue({
+                              v,
+                              key: "gradientType",
+                              device,
+                              state
+                            }) === "radial"
                         }),
                         toolbarGradientRadialDegree({
                           v,
                           device,
                           state,
                           disabled:
-                            tabletSyncOnChange(v, "bgColorType") === "solid" ||
-                            tabletSyncOnChange(v, "gradientType") === "linear"
+                            defaultValueValue({
+                              v,
+                              key: "bgColorType",
+                              device,
+                              state
+                            }) === "solid" ||
+                            defaultValueValue({
+                              v,
+                              key: "gradientType",
+                              device,
+                              state
+                            }) === "linear"
                         })
                       ]
                     }
@@ -1813,26 +1502,25 @@ export function getItemsForTablet(v, component) {
               id: "tabletTabBorder",
               label: t("Border"),
               options: [
-                toolbarBorderColorHexAndOpacity({
+                toolbarBorderColor2({
                   v,
                   device,
                   state,
-                  onChange: [
-                    "onChangeBorderColorHexAndOpacity",
-                    "onChangeBorderColorHexAndOpacityPalette",
-                    "onChangeBorderColorHexAndOpacityDependencies",
-                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet"
-                  ]
-                }),
-                toolbarBorderColorPalette({
-                  v,
-                  device,
-                  state,
-                  onChange: [
-                    "onChangeBorderColorPalette",
-                    "onChangeBorderColorPaletteOpacity",
-                    "onChangeBorderColorHexAndOpacityDependencies",
-                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet"
+                  onChangeStyle: [
+                    "onChangeBorderStyle2",
+                    "onChangeContainerBorderStyleDependencies2"
+                  ],
+                  onChangeHex: [
+                    "onChangeBorderColorHexAndOpacity2",
+                    "onChangeBorderColorHexAndOpacityPalette2",
+                    "onChangeContainerBorderColorHexAndOpacityDependencies2",
+                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet2"
+                  ],
+                  onChangePalette: [
+                    "onChangeBorderColorPalette2",
+                    "onChangeBorderColorPaletteOpacity2",
+                    "onChangeContainerBorderColorHexAndOpacityDependencies2",
+                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet2"
                   ]
                 }),
                 {
@@ -1840,31 +1528,36 @@ export function getItemsForTablet(v, component) {
                   className: "brz-ed-grid__color-fileds",
                   columns: [
                     {
-                      width: 51,
+                      width: 38,
                       options: [
-                        toolbarBorderColorFields({
+                        toolbarBorderColorHexField2({
                           v,
                           device,
                           state,
                           onChange: [
-                            "onChangeBorderColorHexAndOpacity",
-                            "onChangeBorderColorHexAndOpacityPalette",
-                            "onChangeBorderColorHexAndOpacityDependencies",
-                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet"
+                            "onChangeBorderColorHexAndOpacity2",
+                            "onChangeBorderColorHexAndOpacityPalette2",
+                            "onChangeContainerBorderColorHexAndOpacityDependencies2",
+                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet2"
                           ]
                         })
                       ]
                     },
                     {
-                      width: 49,
+                      width: 54,
                       options: [
-                        toolbarBorderWidthBorderColorPicker({
+                        toolbarBorderWidthBorderColorPicker2({
                           v,
                           device,
                           state,
-                          onChange: [
-                            "onChangeBorderWidthGrouped",
-                            "onChangeBorderWidthGroupedDependencies"
+                          onChangeType: ["onChangeBorderWidthType2"],
+                          onChangeGrouped: [
+                            "onChangeBorderWidthGrouped2",
+                            "onChangeBorderWidthGroupedDependencies2"
+                          ],
+                          onChangeUngrouped: [
+                            "onChangeBorderWidthUngrouped2",
+                            "onChangeBorderWidthUngroupedDependencies2"
                           ]
                         })
                       ]
@@ -1874,27 +1567,26 @@ export function getItemsForTablet(v, component) {
               ]
             },
             {
-              id: "tabletTabBoxShadow",
+              id: "tabletBoxShadow",
               label: t("Shadow"),
               options: [
-                toolbarBoxShadowHexAndOpacity({
+                toolbarBoxShadow2({
                   v,
                   device,
                   state: "normal",
-                  onChange: [
-                    "onChangeBoxShadowHexAndOpacity",
-                    "onChangeBoxShadowHexAndOpacityPalette",
-                    "onChangeBoxShadowHexAndOpacityDependencies"
-                  ]
-                }),
-                toolbarBoxShadowPalette({
-                  v,
-                  device,
-                  state: "normal",
-                  onChange: [
-                    "onChangeBoxShadowPalette",
-                    "onChangeBoxShadowPaletteOpacity",
-                    "onChangeBoxShadowHexAndOpacityDependencies"
+                  onChangeStyle: [
+                    "onChangeBoxShadowStyle2",
+                    "onChangeBoxShadowStyleDependencies2"
+                  ],
+                  onChangeHex: [
+                    "onChangeBoxShadowHexAndOpacity2",
+                    "onChangeBoxShadowHexAndOpacityPalette2",
+                    "onChangeBoxShadowHexAndOpacityDependencies2"
+                  ],
+                  onChangePalette: [
+                    "onChangeBoxShadowPalette2",
+                    "onChangeBoxShadowPaletteOpacity2",
+                    "onChangeBoxShadowHexAndOpacityDependencies2"
                   ]
                 }),
                 {
@@ -1904,14 +1596,14 @@ export function getItemsForTablet(v, component) {
                     {
                       width: 41,
                       options: [
-                        toolbarBoxShadowFields({
+                        toolbarBoxShadowHexField2({
                           v,
                           device,
                           state: "normal",
                           onChange: [
-                            "onChangeBoxShadowHexAndOpacity",
-                            "onChangeBoxShadowHexAndOpacityPalette",
-                            "onChangeBoxShadowHexAndOpacityDependencies"
+                            "onChangeBoxShadowHexAndOpacity2",
+                            "onChangeBoxShadowHexAndOpacityPalette2",
+                            "onChangeBoxShadowHexAndOpacityDependencies2"
                           ]
                         })
                       ]
@@ -1919,10 +1611,14 @@ export function getItemsForTablet(v, component) {
                     {
                       width: 59,
                       options: [
-                        toolbarBoxShadow({
+                        toolbarBoxShadowFields2({
                           v,
                           device,
-                          state: "normal"
+                          state: "normal",
+                          onChange: [
+                            "onChangeBoxShadow2",
+                            "onChangeBoxShadowDependencies2"
+                          ]
                         })
                       ]
                     }
@@ -2345,7 +2041,20 @@ export function getItemsForTablet(v, component) {
               }
             ]
           }
-        }
+        },
+        toolbarBorderRadius({
+          v,
+          device,
+          state,
+          onChangeGrouped: [
+            "onChangeBorderRadiusGrouped",
+            "onChangeBorderRadiusGroupedDependencies"
+          ],
+          onChangeUngrouped: [
+            "onChangeBorderRadiusUngrouped",
+            "onChangeBorderRadiusUngroupedDependencies"
+          ]
+        })
       ]
     }
   ];
@@ -2396,47 +2105,6 @@ export function getItemsForMobile(v, component) {
                 }),
                 toolbarBgMapZoom({ v, disabled: v.media !== "map" })
               ]
-            },
-            {
-              id: "mobileTabCurrentElementStyling",
-              label: t("Styling"),
-              options: [
-                toolbarBorderStyle({
-                  v,
-                  device,
-                  state,
-                  onChange: [
-                    "onChangeBorderStyle",
-                    "onChangeBorderStyleDependencies"
-                  ]
-                }),
-                toolbarBorderWidth({
-                  v,
-                  device,
-                  state,
-                  onChangeGrouped: [
-                    "onChangeBorderWidthGrouped",
-                    "onChangeBorderWidthGroupedDependencies"
-                  ],
-                  onChangeUngrouped: [
-                    "onChangeBorderWidthUngrouped",
-                    "onChangeBorderWidthUngroupedDependencies"
-                  ]
-                }),
-                toolbarBorderRadius({
-                  v,
-                  device,
-                  state,
-                  onChangeGrouped: [
-                    "onChangeBorderRadiusGrouped",
-                    "onChangeBorderRadiusGroupedDependencies"
-                  ],
-                  onChangeUngrouped: [
-                    "onChangeBorderRadiusUngrouped",
-                    "onChangeBorderRadiusUngroupedDependencies"
-                  ]
-                })
-              ]
             }
           ]
         }
@@ -2465,91 +2133,36 @@ export function getItemsForMobile(v, component) {
               id: "mobileTabOverlay",
               label: t("Overlay"),
               options: [
-                {
-                  type: "grid",
-                  className: "brz-ed-grid__gradient",
-                  columns: [
-                    {
-                      width: 43,
-                      options: [toolbarBgType({ v, device, state })]
-                    },
-                    {
-                      width: 57,
-                      options: [
-                        toolbarGradientRange({
-                          v,
-                          device,
-                          state,
-                          disabled:
-                            mobileSyncOnChange(v, "bgColorType") === "solid"
-                        })
-                      ]
-                    }
-                  ]
-                },
-                toolbarBgColorHexAndOpacity({
+                toolbarBgColor2({
                   v,
                   device,
                   state,
-                  prefix: "bg",
-                  disabled:
-                    mobileSyncOnChange(v, "bgColorType") === "gradient" &&
-                    mobileSyncOnChange(v, "gradientActivePointer") ===
-                      "finishPointer",
-                  onChange: [
-                    "onChangeBgColorHexAndOpacity",
-                    "onChangeBgColorHexAndOpacityPalette",
-                    "onChangeBgColorHexAndOpacityDependencies",
-                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                  ]
-                }),
-                toolbarBgColorPalette({
-                  v,
-                  device,
-                  state,
-                  prefix: "bg",
-                  disabled:
-                    mobileSyncOnChange(v, "bgColorType") === "gradient" &&
-                    mobileSyncOnChange(v, "gradientActivePointer") ===
-                      "finishPointer",
-                  onChange: [
-                    "onChangeBgColorPalette",
-                    "onChangeBgColorPaletteOpacity",
-                    "onChangeBgColorHexAndOpacityDependencies",
-                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                  ]
-                }),
-                toolbarBgColorHexAndOpacity({
-                  v,
-                  device,
-                  state,
-                  prefix: "gradient",
-                  disabled:
-                    mobileSyncOnChange(v, "bgColorType") === "solid" ||
-                    mobileSyncOnChange(v, "gradientActivePointer") ===
-                      "startPointer",
-                  onChange: [
-                    "onChangeBgColorHexAndOpacity",
-                    "onChangeBgColorHexAndOpacityPalette",
-                    "onChangeBgColorHexAndOpacityDependencies",
-                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                  ]
-                }),
-                toolbarBgColorPalette({
-                  v,
-                  device,
-                  state,
-                  prefix: "gradient",
-                  disabled:
-                    mobileSyncOnChange(v, "bgColorType") === "solid" ||
-                    mobileSyncOnChange(v, "gradientActivePointer") ===
-                      "startPointer",
-                  onChange: [
-                    "onChangeBgColorPalette",
-                    "onChangeBgColorPaletteOpacity",
-                    "onChangeBgColorHexAndOpacityDependencies",
-                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                  ]
+                  onChangeType: ["onChangeBgColorType2"],
+                  onChangeHex: [
+                    "onChangeBgColorHexAndOpacity2",
+                    "onChangeBgColorHexAndOpacityPalette2",
+                    "onChangeBgColorHexAndOpacityDependencies2",
+                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
+                  ],
+                  onChangePalette: [
+                    "onChangeBgColorPalette2",
+                    "onChangeBgColorPaletteOpacity2",
+                    "onChangeBgColorHexAndOpacityDependencies2",
+                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
+                  ],
+                  onChangeGradientHex: [
+                    "onChangeBgColorHexAndOpacity2",
+                    "onChangeBgColorHexAndOpacityPalette2",
+                    "onChangeBgColorHexAndOpacityDependencies2",
+                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
+                  ],
+                  onChangeGradientPalette: [
+                    "onChangeBgColorPalette2",
+                    "onChangeBgColorPaletteOpacity2",
+                    "onChangeBgColorHexAndOpacityDependencies2",
+                    "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
+                  ],
+                  onChangeGradient: ["onChangeGradientRange2"]
                 }),
                 {
                   type: "grid",
@@ -2558,37 +2171,24 @@ export function getItemsForMobile(v, component) {
                     {
                       width: 30,
                       options: [
-                        toolbarBgColorFields({
+                        toolbarBgColorHexField2({
                           v,
                           device,
                           state,
-                          prefix: "bg",
-                          disabled:
-                            mobileSyncOnChange(v, "bgColorType") ===
-                              "gradient" &&
-                            mobileSyncOnChange(v, "gradientActivePointer") ===
-                              "finishPointer",
+                          prefix:
+                            defaultValueValue({
+                              v,
+                              key: "gradientActivePointer",
+                              device,
+                              state
+                            }) === "startPointer"
+                              ? "bg"
+                              : "gradient",
                           onChange: [
-                            "onChangeBgColorHexAndOpacity",
-                            "onChangeBgColorHexAndOpacityPalette",
-                            "onChangeBgColorHexAndOpacityDependencies",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
-                          ]
-                        }),
-                        toolbarBgColorFields({
-                          v,
-                          device,
-                          state,
-                          prefix: "gradient",
-                          disabled:
-                            mobileSyncOnChange(v, "bgColorType") === "solid" ||
-                            mobileSyncOnChange(v, "gradientActivePointer") ===
-                              "startPointer",
-                          onChange: [
-                            "onChangeBgColorHexAndOpacity",
-                            "onChangeBgColorHexAndOpacityPalette",
-                            "onChangeBgColorHexAndOpacityDependencies",
-                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile"
+                            "onChangeBgColorHexAndOpacity2",
+                            "onChangeBgColorHexAndOpacityPalette2",
+                            "onChangeBgColorHexAndOpacityDependencies2",
+                            "onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2"
                           ]
                         })
                       ]
@@ -2603,7 +2203,12 @@ export function getItemsForMobile(v, component) {
                           className:
                             "brz-ed__select--transparent brz-ed__select--align-right",
                           disabled:
-                            mobileSyncOnChange(v, "bgColorType") === "solid"
+                            defaultValueValue({
+                              v,
+                              key: "bgColorType",
+                              device,
+                              state
+                            }) === "solid"
                         })
                       ]
                     },
@@ -2615,16 +2220,36 @@ export function getItemsForMobile(v, component) {
                           device,
                           state,
                           disabled:
-                            mobileSyncOnChange(v, "bgColorType") === "solid" ||
-                            mobileSyncOnChange(v, "gradientType") === "radial"
+                            defaultValueValue({
+                              v,
+                              key: "bgColorType",
+                              device,
+                              state
+                            }) === "solid" ||
+                            defaultValueValue({
+                              v,
+                              key: "gradientType",
+                              device,
+                              state
+                            }) === "radial"
                         }),
                         toolbarGradientRadialDegree({
                           v,
                           device,
                           state,
                           disabled:
-                            mobileSyncOnChange(v, "bgColorType") === "solid" ||
-                            mobileSyncOnChange(v, "gradientType") === "linear"
+                            defaultValueValue({
+                              v,
+                              key: "bgColorType",
+                              device,
+                              state
+                            }) === "solid" ||
+                            defaultValueValue({
+                              v,
+                              key: "gradientType",
+                              device,
+                              state
+                            }) === "linear"
                         })
                       ]
                     }
@@ -2636,26 +2261,25 @@ export function getItemsForMobile(v, component) {
               id: "mobileTabBorder",
               label: t("Border"),
               options: [
-                toolbarBorderColorHexAndOpacity({
+                toolbarBorderColor2({
                   v,
                   device,
                   state,
-                  onChange: [
-                    "onChangeBorderColorHexAndOpacity",
-                    "onChangeBorderColorHexAndOpacityPalette",
-                    "onChangeBorderColorHexAndOpacityDependencies",
-                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile"
-                  ]
-                }),
-                toolbarBorderColorPalette({
-                  v,
-                  device,
-                  state,
-                  onChange: [
-                    "onChangeBorderColorPalette",
-                    "onChangeBorderColorPaletteOpacity",
-                    "onChangeBorderColorHexAndOpacityDependencies",
-                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile"
+                  onChangeStyle: [
+                    "onChangeBorderStyle2",
+                    "onChangeContainerBorderStyleDependencies2"
+                  ],
+                  onChangeHex: [
+                    "onChangeBorderColorHexAndOpacity2",
+                    "onChangeBorderColorHexAndOpacityPalette2",
+                    "onChangeContainerBorderColorHexAndOpacityDependencies2",
+                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile2"
+                  ],
+                  onChangePalette: [
+                    "onChangeBorderColorPalette2",
+                    "onChangeBorderColorPaletteOpacity2",
+                    "onChangeContainerBorderColorHexAndOpacityDependencies2",
+                    "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile2"
                   ]
                 }),
                 {
@@ -2663,31 +2287,36 @@ export function getItemsForMobile(v, component) {
                   className: "brz-ed-grid__color-fileds",
                   columns: [
                     {
-                      width: 51,
+                      width: 38,
                       options: [
-                        toolbarBorderColorFields({
+                        toolbarBorderColorHexField2({
                           v,
                           device,
                           state,
                           onChange: [
-                            "onChangeBorderColorHexAndOpacity",
-                            "onChangeBorderColorHexAndOpacityPalette",
-                            "onChangeBorderColorHexAndOpacityDependencies",
-                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile"
+                            "onChangeBorderColorHexAndOpacity2",
+                            "onChangeBorderColorHexAndOpacityPalette2",
+                            "onChangeContainerBorderColorHexAndOpacityDependencies2",
+                            "onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile2"
                           ]
                         })
                       ]
                     },
                     {
-                      width: 49,
+                      width: 54,
                       options: [
-                        toolbarBorderWidthBorderColorPicker({
+                        toolbarBorderWidthBorderColorPicker2({
                           v,
                           device,
                           state,
-                          onChange: [
-                            "onChangeBorderWidthGrouped",
-                            "onChangeBorderWidthGroupedDependencies"
+                          onChangeType: ["onChangeBorderWidthType2"],
+                          onChangeGrouped: [
+                            "onChangeBorderWidthGrouped2",
+                            "onChangeBorderWidthGroupedDependencies2"
+                          ],
+                          onChangeUngrouped: [
+                            "onChangeBorderWidthUngrouped2",
+                            "onChangeBorderWidthUngroupedDependencies2"
                           ]
                         })
                       ]
@@ -2697,27 +2326,26 @@ export function getItemsForMobile(v, component) {
               ]
             },
             {
-              id: "mobileTabBoxShadow",
+              id: "tabletBoxShadow",
               label: t("Shadow"),
               options: [
-                toolbarBoxShadowHexAndOpacity({
+                toolbarBoxShadow2({
                   v,
                   device,
                   state: "normal",
-                  onChange: [
-                    "onChangeBoxShadowHexAndOpacity",
-                    "onChangeBoxShadowHexAndOpacityPalette",
-                    "onChangeBoxShadowHexAndOpacityDependencies"
-                  ]
-                }),
-                toolbarBoxShadowPalette({
-                  v,
-                  device,
-                  state: "normal",
-                  onChange: [
-                    "onChangeBoxShadowPalette",
-                    "onChangeBoxShadowPaletteOpacity",
-                    "onChangeBoxShadowHexAndOpacityDependencies"
+                  onChangeStyle: [
+                    "onChangeBoxShadowStyle2",
+                    "onChangeBoxShadowStyleDependencies2"
+                  ],
+                  onChangeHex: [
+                    "onChangeBoxShadowHexAndOpacity2",
+                    "onChangeBoxShadowHexAndOpacityPalette2",
+                    "onChangeBoxShadowHexAndOpacityDependencies2"
+                  ],
+                  onChangePalette: [
+                    "onChangeBoxShadowPalette2",
+                    "onChangeBoxShadowPaletteOpacity2",
+                    "onChangeBoxShadowHexAndOpacityDependencies2"
                   ]
                 }),
                 {
@@ -2727,14 +2355,14 @@ export function getItemsForMobile(v, component) {
                     {
                       width: 41,
                       options: [
-                        toolbarBoxShadowFields({
+                        toolbarBoxShadowHexField2({
                           v,
                           device,
                           state: "normal",
                           onChange: [
-                            "onChangeBoxShadowHexAndOpacity",
-                            "onChangeBoxShadowHexAndOpacityPalette",
-                            "onChangeBoxShadowHexAndOpacityDependencies"
+                            "onChangeBoxShadowHexAndOpacity2",
+                            "onChangeBoxShadowHexAndOpacityPalette2",
+                            "onChangeBoxShadowHexAndOpacityDependencies2"
                           ]
                         })
                       ]
@@ -2742,10 +2370,14 @@ export function getItemsForMobile(v, component) {
                     {
                       width: 59,
                       options: [
-                        toolbarBoxShadow({
+                        toolbarBoxShadowFields2({
                           v,
                           device,
-                          state: "normal"
+                          state: "normal",
+                          onChange: [
+                            "onChangeBoxShadow2",
+                            "onChangeBoxShadowDependencies2"
+                          ]
                         })
                       ]
                     }
@@ -3168,7 +2800,20 @@ export function getItemsForMobile(v, component) {
               }
             ]
           }
-        }
+        },
+        toolbarBorderRadius({
+          v,
+          device,
+          state,
+          onChangeGrouped: [
+            "onChangeBorderRadiusGrouped",
+            "onChangeBorderRadiusGroupedDependencies"
+          ],
+          onChangeUngrouped: [
+            "onChangeBorderRadiusUngrouped",
+            "onChangeBorderRadiusUngroupedDependencies"
+          ]
+        })
       ]
     }
   ];

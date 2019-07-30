@@ -36,17 +36,18 @@ const {
   wpTranslationsDev
 } = require("./build-utils/wpTranslations");
 
+const { Readable, Transform } = require("stream");
+const Vinyl = require("vinyl");
+
 // flags
 const {
-  TEMPLATE_NAME,
+  KIT_NAME,
   TARGET,
   IS_PRODUCTION,
   IS_EXPORT,
   IS_PRO,
   VERSION,
   VERSION_PRO,
-  BUILD_DIR,
-  BUILD_DIR_PRO,
   NO_WATCH,
   paths
 } = argvVars(process.argv);
@@ -54,7 +55,7 @@ let ABORTED = false;
 
 const postsCssProcessors = [
   sass({
-    includePaths: [paths.template, "node_modules"],
+    includePaths: ["node_modules"],
     errLogToConsole: true
   }),
   autoprefixer({
@@ -73,7 +74,11 @@ gulp.task(
     const tasks = [
       "clean",
       "editor",
-      "template",
+      "kits",
+      "templates",
+      "build.defaults",
+      "build.googleFonts",
+      "build.integrations",
       ...(IS_EXPORT ? ["export"] : []),
       ...(IS_PRO ? ["pro"] : []),
       ...(TARGET === "WP" ? ["wp.translations"] : []),
@@ -154,31 +159,6 @@ gulp.task("verifications", async () => {
     });
   }
 });
-gulp.task("assignPaths", () => {
-  const templatesPath = path.resolve(__dirname, "./templates");
-
-  if (!TEMPLATE_NAME) {
-    throw new Error(
-      chalk.red.bold(
-        "No template argument (-t TEMPLATE) specified for gulp build"
-      )
-    );
-  }
-  if (!templateExists(TEMPLATE_NAME)) {
-    throw new Error(
-      chalk.red.bold("Template " + TEMPLATE_NAME + ", not found:")
-    );
-  }
-  paths.template = path.resolve(templatesPath, `./${TEMPLATE_NAME}`);
-  paths.build = BUILD_DIR
-    ? path.resolve(__dirname, BUILD_DIR)
-    : path.resolve(__dirname, `./build/${TEMPLATE_NAME}`);
-
-  function templateExists(template) {
-    const templates = fs.readdirSync(templatesPath);
-    return templates.indexOf(template) !== -1;
-  }
-});
 
 gulp.task("clean", [
   "clean.local",
@@ -195,31 +175,18 @@ gulp.task("clean.pro", () => {
   del.sync(paths.buildPro + "/*", { force: true });
 });
 
-gulp.task(
-  "editor",
-  [
-    "editor.js.compile",
-    "editor.css",
-    "editor.fonts",
-    "editor.icons",
-    "editor.img",
-    "editor.polyfill",
-    "editor.twig"
-  ],
-  done => {
-    if (IS_PRODUCTION) {
-      const tasks = ["editor.js.sourcemap"];
-
-      runSequence(tasks, done);
-    } else {
-      done();
-    }
-  }
-);
+gulp.task("editor", [
+  "editor.js.compile",
+  "editor.css",
+  "editor.fonts",
+  "editor.icons",
+  "editor.kit.icons",
+  "editor.img",
+  "editor.polyfill",
+  "editor.twig"
+]);
 gulp.task("editor.js.compile", done => {
   const options = {
-    TEMPLATE_NAME,
-    TEMPLATE_PATH: paths.template,
     TARGET,
     IS_PRODUCTION,
     IS_EXPORT,
@@ -277,19 +244,34 @@ gulp.task("editor.css", () => {
     .pipe(gulp.dest(dest));
 });
 gulp.task("editor.fonts", () => {
-  const src = [
-    paths.editor + "/sass/editor/fonts/*",
-    paths.template + "/assets/fonts/**/*.{eot,svg,ttf,woff,woff2}"
-  ];
+  const src = paths.editor + "/sass/editor/fonts/*";
   const dest = paths.build + "/editor/fonts";
 
   gulp.src(src).pipe(gulp.dest(dest));
 });
 gulp.task("editor.icons", () => {
-  const src = paths.editor + "/sass/editor/icons/*";
+  const src = paths.editor + "/sass/editor/icons/**/*.{eot,svg,ttf,woff,woff2}";
   const dest = paths.build + "/editor/icons";
 
   gulp.src(src).pipe(gulp.dest(dest));
+});
+gulp.task("editor.kit.icons", done => {
+  const src = paths.editor + "/icons/**/*";
+  const dest = paths.build + "/editor/icons";
+  const { encrypt } = require(paths.editor +
+    "/js/component/ThemeIcon/utils.js");
+
+  const svgEncrypt = content => {
+    const base64 = Buffer.from(content).toString("base64");
+
+    return encrypt(base64);
+  };
+
+  gulp
+    .src(src)
+    .pipe(gulpPlugins.change(svgEncrypt))
+    .pipe(gulp.dest(dest))
+    .on("end", done);
 });
 gulp.task("editor.img", () => {
   const src = paths.editor + "/img/*";
@@ -330,73 +312,122 @@ gulp.task("editor.twig", done => {
       done();
     });
 });
-gulp.task("editor.js.sourcemap", done => {
-  const src = paths.build + "/editor/js/editor.js";
-  const dest = paths.build + "/editor/js";
-  const sourceMapRegex = /(\/\/# sourceMappingURL=.+)$/;
 
-  gulp
-    .src(src)
-    .pipe(gulpPlugins.rename("editor.dev.js"))
-    .pipe(gulp.dest(dest))
-    .pipe(gulpPlugins.replace(sourceMapRegex, ""))
-    .pipe(gulpPlugins.rename("editor.js"))
-    .pipe(gulp.dest(dest))
-    .on("end", done);
-});
-
-gulp.task("template", [
-  ...(IS_PRODUCTION && IS_EXPORT
-    ? ["template.icons", "template.media"]
-    : ["template.icons"]),
-  "template.blocksImg"
+gulp.task("kits", [
+  "kits.data",
+  "kits.thumbs",
+  "kits.styles",
+  ...(IS_PRODUCTION && IS_EXPORT ? ["kits.media"] : [])
 ]);
-gulp.task("template.media", done => {
-  const src = paths.template + "/assets/img/*";
-  const dest = paths.build + "/media";
+gulp.task("kits.data", () => {
+  const src = paths.kits + "/index.js";
+  const dest = paths.build + "/kits";
+  const kits = require(src);
 
-  gulp
-    .src(src)
-    .pipe(gulp.dest(dest))
-    .on("end", () => {
-      done();
-    });
+  let rs = new Readable({
+    objectMode: true
+  });
+
+  // meta
+  rs.push(
+    new Vinyl({
+      path: "meta.json",
+      contents: Buffer.from(
+        JSON.stringify(kits, (k, v) => {
+          return k === "resolve" ? undefined : v;
+        })
+      )
+    })
+  );
+
+  // resolves
+  for (let kit of kits.kits) {
+    for (let block of kit.blocks) {
+      const { id, resolve } = block;
+
+      rs.push(
+        new Vinyl({
+          path: `resolves/${id}.json`,
+          contents: Buffer.from(JSON.stringify(resolve))
+        })
+      );
+    }
+  }
+
+  // null signifies stream end
+  rs.push(null);
+
+  rs.pipe(gulp.dest(dest));
 });
-gulp.task("template.icons", done => {
-  const src = paths.template + "/assets/icons/**/*";
-  const dest = paths.build + "/template/";
-  const { encrypt } = require(paths.editor +
-    "/js/component/ThemeIcon/utils.js");
-
-  const svgEncrypt = content => {
-    const base64 = Buffer.from(content).toString("base64");
-
-    return encrypt(base64);
-  };
+gulp.task("kits.thumbs", done => {
+  const src = paths.kits + "/*/blocks/*/Preview.jpg";
+  const dest = paths.build + "/kits/thumbs";
 
   gulp
-    .src(src, { base: paths.template + "/assets" })
-    .pipe(gulpPlugins.change(svgEncrypt))
-    .pipe(gulp.dest(dest))
-    .on("end", done);
-});
-gulp.task("template.blocksImg", done => {
-  const src = paths.template + "/blocks/**/Preview.jpg";
-  const dest = paths.build + "/template/img-block-thumbs";
-
-  gulp
-    // .src(src, { base: paths.template + "/assets" })
     .src(src)
     .pipe(
-      gulpPlugins.rename(path => {
-        path.basename = path.dirname;
-        path.dirname = "";
+      gulpPlugins.rename(path_ => {
+        const r = new RegExp(`.+\\${path.sep}blocks\\${path.sep}`);
+
+        path_.basename = path_.dirname.replace(r, "");
+        path_.dirname = "";
       })
     )
     .pipe(gulp.dest(dest))
     .on("end", () => {
       done();
     });
+});
+gulp.task("kits.styles", () => {
+  const src = paths.kits + "/*/styles/index.js";
+  const dest = paths.build + "/styles";
+
+  var t = new Transform({
+    objectMode: true,
+    transform(file, encoding, callback) {
+      this.acc = this.acc || [];
+      this.acc.push(file);
+      callback();
+    },
+    flush(cb) {
+      let a = [];
+
+      for (let file of this.acc) {
+        const x = require(file.path);
+
+        a = [...a, ...x];
+      }
+
+      const r = new Vinyl({
+        path: "styles.json",
+        contents: Buffer.from(JSON.stringify(a, null, 2))
+      });
+
+      this.push(r);
+      cb();
+    }
+  });
+
+  // null signifies stream end
+
+  gulp
+    .src(src)
+    .pipe(t)
+    .pipe(gulp.dest(dest));
+});
+gulp.task("kits.media", () => {
+  const src = paths.kits + "/*/img/*";
+  const dest = paths.build + "/media";
+
+  return gulp
+    .src(src)
+    .pipe(
+      gulpPlugins.rename(path_ => {
+        // {KIT_NAME}/img/{IMG} -> {IMG}
+        path_.dirname = "";
+      })
+    )
+    .pipe(gulp.dest(dest));
 });
 
 gulp.task("export", ["export.css", "export.js", "export.twig"]);
@@ -426,10 +457,71 @@ gulp.task("export.css", done => {
       done();
     });
 });
+
+gulp.task("templates", ["templates.data", "templates.thumbs"]);
+gulp.task("templates.data", () => {
+  const src = paths.templates + "/index.js";
+  const dest = paths.build + "/templates";
+  const templates = require(src);
+
+  let rs = new Readable({
+    objectMode: true
+  });
+
+  // meta
+  rs.push(
+    new Vinyl({
+      path: "meta.json",
+      contents: Buffer.from(
+        JSON.stringify(templates, (k, v) => {
+          return k === "resolve" ? undefined : v;
+        })
+      )
+    })
+  );
+
+  // resolves
+  for (let template of templates.templates) {
+    for (let page of template.pages) {
+      const { id, resolve } = page;
+
+      rs.push(
+        new Vinyl({
+          path: `resolves/${id}.json`,
+          contents: Buffer.from(JSON.stringify(resolve))
+        })
+      );
+    }
+  }
+
+  // null signifies stream end
+  rs.push(null);
+
+  rs.pipe(gulp.dest(dest));
+});
+gulp.task("templates.thumbs", done => {
+  const src = paths.templates + "/*/**/Preview.jpg";
+  const dest = paths.build + "/templates/thumbs";
+
+  gulp
+    .src(src)
+    .pipe(
+      gulpPlugins.rename(path_ => {
+        path_.basename = path_.dirname.replace(
+          `${path.sep}pages${path.sep}`,
+          ""
+        );
+        path_.dirname = "";
+      })
+    )
+    .pipe(gulp.dest(dest))
+    .on("end", () => {
+      done();
+    });
+});
+
 gulp.task("export.js", done => {
   const options = {
-    TEMPLATE_NAME,
-    TEMPLATE_PATH: paths.template,
     TARGET,
     IS_PRODUCTION,
     IS_EXPORT,
@@ -479,16 +571,9 @@ gulp.task("export.twig", done => {
     });
 });
 
-gulp.task("pro", [
-  "pro.js",
-  "pro.block-thumbs",
-  "pro.template-thumbs",
-  ...(IS_PRODUCTION && IS_EXPORT ? ["pro.media"] : [])
-]);
+gulp.task("pro", ["pro.js"]);
 gulp.task("pro.js", done => {
   const options = {
-    TEMPLATE_NAME,
-    TEMPLATE_PATH: paths.template,
     TARGET,
     IS_PRODUCTION,
     IS_EXPORT,
@@ -513,48 +598,6 @@ gulp.task("pro.js", done => {
       done();
     }
   });
-});
-gulp.task("pro.block-thumbs", done => {
-  const src = paths.template + "/pro/blocks/**/Preview.jpg";
-  const dest = paths.buildPro + "/img-block-thumbs";
-  gulp
-    .src(src)
-    .pipe(
-      gulpPlugins.rename(path => {
-        path.basename = path.dirname;
-        path.dirname = "";
-      })
-    )
-    .pipe(gulp.dest(dest))
-    .on("end", () => {
-      done();
-    });
-});
-gulp.task("pro.template-thumbs", done => {
-  const src = paths.template + "/pro/templates/*/**/Preview.jpg";
-  const dest = paths.buildPro + "/img-template-thumbs";
-
-  gulp
-    .src(src)
-    .pipe(
-      gulpPlugins.rename(path_ => {
-        path_.basename = path_.dirname.replace(path.sep, "");
-        path_.dirname = "";
-      })
-    )
-    .pipe(gulp.dest(dest))
-    .on("end", () => {
-      done();
-    });
-});
-gulp.task("pro.media", done => {
-  const src = paths.template + "/pro/media/*";
-  const dest = paths.buildPro + "/media";
-
-  gulp
-    .src(src)
-    .pipe(gulp.dest(dest))
-    .on("end", done);
 });
 
 gulp.task("wp.translations", async () => {
@@ -581,7 +624,7 @@ gulp.task("wp.open-source", done => {
     "!**/pro/**/*",
     "!**/*.pro.*"
   ];
-  const dest = paths.build + "/editor-src";
+  const dest = paths.buildLocal + "/editor-src";
 
   gulp
     .src(src, { dot: true })
@@ -596,10 +639,28 @@ gulp.task("wp.open-source", done => {
     .on("end", done);
 });
 
+gulp.task("build.googleFonts", () => {
+  const src = paths.editor + "/js/config/googleFonts.json";
+  const dest = paths.build;
+
+  return gulp.src(src).pipe(gulp.dest(dest));
+});
+gulp.task("build.integrations", () => {
+  const src = paths.editor + "/js/config/integrations.json";
+  const dest = paths.build;
+
+  return gulp.src(src).pipe(gulp.dest(dest));
+});
+gulp.task("build.defaults", () => {
+  const src = "./backend/config/defaults.json";
+  const dest = paths.build;
+
+  return gulp.src(src).pipe(gulp.dest(dest));
+});
 gulp.task("build.versions", () => {
   const versionsJSON = JSON.stringify(
     {
-      slug: TEMPLATE_NAME,
+      slug: KIT_NAME,
       version: VERSION
     },
     null,
@@ -618,7 +679,6 @@ gulp.task("build.versions", () => {
     fs.writeFileSync(paths.buildPro + "/versions.json", versionsJSON, "utf8");
   }
 });
-
 gulp.task("build.stats", () => {
   const files = [
     // editor
@@ -671,15 +731,13 @@ gulp.task("build.zip", done => {
   const src = [
     paths.build + "/**/*",
     `!${paths.build}/pro/`,
-    `!${paths.build}/pro/**/*`,
-    `!${paths.build}/editor-src/`, // generated when building for WP
-    `!${paths.build}/editor-src/**/*` // generated when building for WP
+    `!${paths.build}/pro/**/*`
   ];
-  makeZip(src, `${TEMPLATE_NAME}__${VERSION}__${suffix}.zip`);
+  makeZip(src, `editor-build__${VERSION}__${suffix}.zip`);
 
   if (IS_PRO) {
     const src = [paths.buildPro + "/**/*"];
-    makeZip(src, `${TEMPLATE_NAME}-pro__${VERSION_PRO}__${suffix}.zip`);
+    makeZip(src, `editor-build-pro__${VERSION_PRO}__${suffix}.zip`);
   }
 
   function makeZip(src, zipName) {
@@ -708,14 +766,6 @@ gulp.task("watch", () => {
   const coreCSSPath = paths.editor + "/**/*.scss";
   gulp
     .watch(coreCSSPath, ["editor.css", ...(IS_EXPORT ? ["export.css"] : [])])
-    .on("change", handleChange);
-
-  const templateMiscPath = [
-    paths.template + "/assets/**/*",
-    "!" + paths.template + "/assets/icons/**"
-  ];
-  gulp
-    .watch(templateMiscPath, ["template", "editor.css"])
     .on("change", handleChange);
 
   function handleChange(event) {

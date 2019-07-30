@@ -11,7 +11,10 @@
     "className": "",
 
     "fontStyle": "",
-    "fontFamily": "roboto",
+    "fontFamilyType": "google",
+    "families": {
+      "fontFamily": "roboto"
+    },
     "fontSize": 42,
     "fontWeight": 700,
     "lineHeight": 1.3,

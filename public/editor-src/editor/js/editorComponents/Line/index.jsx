@@ -27,7 +27,7 @@ class Line extends EditorComponent {
     );
 
     return (
-      <Toolbar {...this.makeToolbarPropsFromConfig(toolbarConfig)}>
+      <Toolbar {...this.makeToolbarPropsFromConfig2(toolbarConfig)}>
         <CustomCSS selectorName={this.getId()} css={v.customCSS}>
           <div className={className}>
             <BoxResizer

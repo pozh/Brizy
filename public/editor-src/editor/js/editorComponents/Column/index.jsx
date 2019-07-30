@@ -22,12 +22,8 @@ import Link from "visual/component/Link";
 import { percentageToPixels } from "visual/utils/meta";
 import { minWinColumn } from "visual/config/columns";
 import Items from "./Items";
-import {
-  bgStyleClassName,
-  bgStyleCSSVars,
-  styleClassName,
-  styleCSSVars
-} from "./styles";
+import { styleBg, styleColumn } from "./styles";
+import { css } from "visual/utils/cssStyle";
 import defaultValue from "./defaultValue.json";
 import { tabletSyncOnChange, mobileSyncOnChange } from "visual/utils/onChange";
 
@@ -86,12 +82,6 @@ class Column extends EditorComponent {
     if (this.floatingButton) {
       this.floatingButton.setActive(false);
     }
-
-    this.patchValue({
-      tabsState: "tabNormal",
-      tabsCurrentElement: "tabCurrentElement",
-      tabsColor: "tabOverlay"
-    });
   };
 
   handleToolbarEnter = () => {
@@ -348,8 +338,8 @@ class Column extends EditorComponent {
     );
   }
 
-  renderContent(v) {
-    const { bgImageSrc, bgColorOpacity } = v;
+  renderContent(v, vs) {
+    const { bgImageSrc, bgColorOpacity, bgPopulation } = v;
 
     const itemsProps = this.makeSubcomponentProps({
       bindWithKey: "items",
@@ -357,9 +347,18 @@ class Column extends EditorComponent {
       meta: this.getMeta(v)
     });
 
+    const classNameBg = classnames(
+      "brz-d-xs-flex",
+      css(
+        `${this.constructor.componentId}-bg`,
+        `${this.getId()}-bg`,
+        styleBg(vs, v)
+      )
+    );
+
     const bgProps = {
-      className: bgStyleClassName(v, this.props),
-      imageSrc: bgImageSrc,
+      className: classNameBg,
+      imageSrc: bgImageSrc || bgPopulation,
       colorOpacity: bgColorOpacity,
       tabletImageSrc: tabletSyncOnChange(v, "bgImageSrc"),
       tabletColorOpacity: tabletSyncOnChange(v, "bgColorOpacity"),
@@ -407,7 +406,7 @@ class Column extends EditorComponent {
     return <EditorArrayComponent {...popupsProps} />;
   }
 
-  renderForEdit(v) {
+  renderForEdit(v, vs) {
     const {
       animationName,
       animationDuration,
@@ -418,33 +417,38 @@ class Column extends EditorComponent {
       popups
     } = v;
     const {
-      meta: { inGrid },
+      meta: { inGrid, posts },
       path
     } = this.props;
     const isInnerRow = this.isInnerRow();
-    const styles = {
-      ...bgStyleCSSVars(v, this.props),
-      ...styleCSSVars(v, this.props)
-    };
 
     const borderClassName = classnames("brz-ed-border__column", {
       "brz-ed-border__column--empty": items.length === 0
     });
+
+    const classNameColumn = classnames(
+      "brz-columns",
+      { "brz-columns__posts": IS_EDITOR && posts },
+      css(
+        `${this.constructor.componentId}-column`,
+        `${this.getId()}-column`,
+        styleColumn(vs, v)
+      )
+    );
 
     return (
       <Fragment>
         <SortableElement type="column" useHandle={true}>
           <CustomCSS selectorName={this.getId()} css={v.customCSS}>
             <Animation
-              className={styleClassName(v, this.props)}
-              style={styles}
+              className={classNameColumn}
               name={animationName !== "none" && animationName}
               duration={animationDuration}
               delay={animationDelay}
             >
               <Roles
                 allow={["admin"]}
-                fallbackRender={() => this.renderContent(v)}
+                fallbackRender={() => this.renderContent(v, vs)}
               >
                 <ContextMenu {...this.makeContextMenuProps(contextMenuConfig)}>
                   <ContainerBorder
@@ -460,7 +464,7 @@ class Column extends EditorComponent {
                     {this.renderResizer("left")}
                     {this.renderResizer("right")}
                     {this.renderToolbar(v)}
-                    {this.renderContent(v)}
+                    {this.renderContent(v, vs)}
                   </ContainerBorder>
                 </ContextMenu>
               </Roles>
@@ -475,7 +479,7 @@ class Column extends EditorComponent {
     );
   }
 
-  renderForView(v) {
+  renderForView(v, vs) {
     const {
       animationName,
       animationDuration,
@@ -495,16 +499,25 @@ class Column extends EditorComponent {
       popup: linkPopup
     };
 
+    const classNameColumn = classnames(
+      "brz-columns",
+      css(
+        `${this.constructor.componentId}-column`,
+        `${this.getId()}-column`,
+        styleColumn(vs, v)
+      )
+    );
+
     return (
       <Fragment>
         <CustomCSS selectorName={this.getId()} css={v.customCSS}>
           <Animation
-            className={styleClassName(v, this.props)}
+            className={classNameColumn}
             name={animationName !== "none" && animationName}
             duration={animationDuration}
             delay={animationDelay}
           >
-            {this.renderContent(v)}
+            {this.renderContent(v, vs)}
             {linkHrefs[linkType] !== "" && (
               <Link
                 className="brz-container-link"

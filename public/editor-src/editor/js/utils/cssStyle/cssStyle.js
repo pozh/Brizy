@@ -7,101 +7,255 @@ const devices = {
   mobile: 767
 };
 
-export function renderStyles({ vs, v, styles }) {
-  let output = "";
-  let result = "";
+const states = {
+  normal: "normal",
+  hover: "hover"
+};
+
+let legacyByDefault = {};
+
+export function renderStyles({ vs, v, styles, props }) {
+  const defaultCSS = loopStyles({ vs, styles, props });
+  const customCSS = loopStyles({ vs, v, styles, props });
+
+  return [defaultCSS, customCSS];
+}
+function loopStyles({ vs, v, styles, props }) {
+  let out = "";
+  let legacy = {};
+  let mode = "";
 
   Object.entries(devices).forEach(function([device, deviceValue]) {
-    Object.entries(styles).forEach(function([styleKey, styleValue]) {
-      result = diffResponsiveDesktopStyle({ vs, v, device, styleValue });
+    Object.entries(states).forEach(function([state, stateValue]) {
+      if (device === "desktop" || state === "normal") {
+        Object.entries(styles).forEach(function([styleKey, styleValue]) {
+          Object.entries(styleValue).forEach(function([
+            styleKeyKey,
+            styleValueValue
+          ]) {
+            styleValueValue.forEach(function(currentStyle) {
+              const currentStyleArray = currentStyle.split("|||");
 
-      if (result !== "") {
-        output +=
-          device !== "desktop" ? `@media (max-width: ${deviceValue}px){` : "";
+              if (currentStyleArray.length === 2) {
+                mode = currentStyleArray[1];
+              } else {
+                mode = "";
+              }
 
-        output += `${styleKey}{`;
+              if (v) {
+                out = onStyles[currentStyleArray[0]]({
+                  v,
+                  device,
+                  state,
+                  mode,
+                  props
+                });
+              } else {
+                out = onStyles[currentStyleArray[0]]({
+                  v: vs,
+                  device,
+                  state,
+                  mode,
+                  props
+                });
+              }
 
-        output += result;
-
-        output += `}`;
-        output += device !== "desktop" ? `}` : "";
+              legacy = legacyByOut({
+                legacy,
+                out,
+                styleKey,
+                state,
+                currentStyle
+              });
+            });
+          });
+        });
       }
     });
   });
 
-  return output;
+  //console.log(JSON.parse(JSON.stringify(output)));
+  //console.log(JSON.parse(JSON.stringify(legacy)));
+
+  if (!v) legacyByDefault = legacy;
+
+  return cssOutput({ v, styles, legacy });
 }
 
-function diffResponsiveDesktopStyle({ vs, v, device, styleValue }) {
-  let output = styleValue.reduce((acc, currentStyle) => {
-    if (v === undefined) {
-      const desktopValue = onStyles[currentStyle]({ v: vs, device: "desktop" });
-      const responsiveValue = onStyles[currentStyle]({ v: vs, device });
+function cssOutput({ v, styles, legacy }) {
+  let goStandart = "";
+  let goInterval = "";
+  let gooutStandart = "";
+  let gooutInterval = "";
+  let goout = "";
+  let devicesCounter = 0;
+  let standartCss = "";
+  let intervalCss = "";
 
-      acc +=
-        device === "desktop"
-          ? desktopValue
-          : desktopValue === responsiveValue
-          ? ""
-          : responsiveValue;
+  Object.entries(devices).forEach(function(
+    [device, deviceValue],
+    deviceKey,
+    devicesArray
+  ) {
+    Object.entries(states).forEach(function([state, stateValue]) {
+      if (legacy[state]) {
+        gooutStandart = "";
+        gooutInterval = "";
+
+        Object.entries(legacy[state]).forEach(function([className, type]) {
+          goStandart = "";
+          goInterval = "";
+
+          Object.entries(type).forEach(function([typeKey, cssArray]) {
+            let go = cssArray[devicesCounter];
+
+            if (
+              v &&
+              JSON.stringify(legacyByDefault[state][className][typeKey]) ===
+                JSON.stringify(legacy[state][className][typeKey])
+            ) {
+              go = "";
+            }
+
+            goStandart +=
+              styles[className].standart &&
+              styles[className].standart.indexOf(typeKey) !== -1 &&
+              go !== "" &&
+              go !== undefined
+                ? go
+                : "";
+
+            goInterval +=
+              styles[className].interval &&
+              styles[className].interval.indexOf(typeKey) !== -1 &&
+              go !== "" &&
+              go !== undefined
+                ? go
+                : "";
+          });
+
+          let key;
+          if (state === "normal") {
+            key = `${className.replace(":hover", "")}{`;
+          } else {
+            key = `${className}{`;
+          }
+
+          if (goStandart !== "") {
+            gooutStandart += key + goStandart + "}";
+          }
+
+          if (goInterval !== "") {
+            gooutInterval += key + goInterval + "}";
+          }
+        });
+      }
+
+      if (gooutStandart !== "") {
+        standartCss =
+          device === "desktop" && state === "hover"
+            ? `@media(min-width:${devicesArray[devicesCounter + 1][1]}px){`
+            : device === "desktop"
+            ? ""
+            : devicesCounter === devicesArray.length - 1
+            ? `@media(max-width:${deviceValue}px){`
+            : `@media(max-width:${
+                devicesArray[devicesCounter][1]
+              }px) and (min-width:${devicesArray[devicesCounter + 1][1] +
+                1}px){`;
+
+        goout += standartCss + gooutStandart + (standartCss !== "" ? "}" : "");
+      }
+
+      if (gooutInterval !== "") {
+        intervalCss =
+          devicesCounter === 0
+            ? `@media(min-width:${devicesArray[devicesCounter + 1][1]}px){`
+            : devicesCounter === devicesArray.length - 1
+            ? `@media(max-width:${deviceValue}px){`
+            : `@media(max-width:${
+                devicesArray[devicesCounter][1]
+              }px) and (min-width:${devicesArray[devicesCounter + 1][1] +
+                1}px){`;
+
+        goout += intervalCss + gooutInterval + (intervalCss !== "" ? "}" : "");
+      }
+    });
+
+    devicesCounter++;
+  });
+
+  return goout;
+}
+
+function legacyByOut({ legacy, out, styleKey, state, currentStyle }) {
+  if (
+    state === "hover" &&
+    legacy.normal &&
+    legacy.normal[styleKey] &&
+    legacy.normal[styleKey][currentStyle]
+  ) {
+    out = legacy.normal[styleKey][currentStyle][0] === out ? "" : out;
+  }
+
+  if (
+    legacy[state] &&
+    legacy[state][styleKey] &&
+    legacy[state][styleKey][currentStyle]
+  ) {
+    out = legacy[state][styleKey][currentStyle][0] === out ? "" : out;
+  }
+
+  if (legacy[state]) {
+    if (legacy[state][styleKey]) {
+      if (legacy[state][styleKey][currentStyle]) {
+        legacy[state][styleKey][currentStyle].push(out);
+      } else {
+        legacy[state][styleKey][currentStyle] = [out];
+      }
     } else {
-      const defaultValue = onStyles[currentStyle]({ v: vs, device });
-      const desktopValue = onStyles[currentStyle]({ v, device: "desktop" });
-      const responsiveValue = onStyles[currentStyle]({ v, device });
-
-      acc +=
-        defaultValue === responsiveValue
-          ? ""
-          : device === "desktop"
-          ? desktopValue
-          : desktopValue === responsiveValue
-          ? ""
-          : responsiveValue;
+      legacy[state][styleKey] = { [currentStyle]: [out] };
     }
+  } else {
+    legacy[state] = { [styleKey]: { [currentStyle]: [out] } };
+  }
 
-    return acc;
-  }, "");
-
-  return output;
+  return legacy;
 }
 
 const cssCache = new Map();
 
 export function css(defaultID, elementID, [defaultStyle, elementStyle]) {
-  if (process.env.NODE_ENV === "development") {
-    if (!defaultStyle) {
-      throw new Error(`css default styles can not be empty (${defaultID})`);
+  let defaultData;
+  if (defaultStyle) {
+    defaultData = cssCache.get(defaultID);
+    // we don't treat the else clause because we assume that
+    // default styles will be the same for a given id no matter
+    // how many times this function will be called
+    if (!defaultData) {
+      const className = `brz-css-${uuid(5)}`;
+      const cssText = replacePlaceholders(defaultStyle, className);
+      let node;
+
+      if (!css.isServer) {
+        node = document.createElement("style");
+
+        node.setAttribute("data-brz-css", "");
+        node.appendChild(document.createTextNode(""));
+        node.childNodes[0].nodeValue = cssText;
+
+        document.head.appendChild(node);
+      }
+
+      defaultData = {
+        node,
+        className,
+        cssText
+      };
+      cssCache.set(defaultID, defaultData);
     }
   }
 
-  let defaultData = cssCache.get(defaultID);
-  // we don't treat the else clause because we suppose that
-  // default styles will be the same for a given id no matter
-  // how many times this function will be called
-  if (!defaultData) {
-    const className = `brz-css-${uuid(5)}`;
-    const cssText = replacePlaceholders(defaultStyle, className);
-    let node;
-
-    if (!css.isServer) {
-      node = document.createElement("style");
-
-      node.setAttribute("data-brz-css", "");
-      node.appendChild(document.createTextNode(""));
-      node.childNodes[0].nodeValue = cssText;
-
-      document.head.appendChild(node);
-    }
-
-    defaultData = {
-      node,
-      className,
-      cssText
-    };
-    cssCache.set(defaultID, defaultData);
-  }
-
-  // elementStyle can be an empty string sometimes
   let elementData;
   if (elementStyle) {
     elementData = cssCache.get(elementID);
@@ -146,13 +300,13 @@ export function css(defaultID, elementID, [defaultStyle, elementStyle]) {
   }
 
   return [
-    defaultData.className,
+    ...(defaultData ? [defaultData.className] : []),
     ...(elementData ? [elementData.className] : [])
   ].join(" ");
 }
 
 function replacePlaceholders(styles, className) {
-  return styles.replace(/&/gm, `.${className}`);
+  return styles.replace(/&&/gm, `.${className}`);
 }
 
 export function renderStatic(cb) {

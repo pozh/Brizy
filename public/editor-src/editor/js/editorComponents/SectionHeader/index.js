@@ -10,6 +10,7 @@ import SortableZIndex from "visual/component/Sortable/SortableZIndex";
 import { ToolbarExtend, hideToolbar } from "visual/component/Toolbar";
 import { currentTooltip } from "visual/component/Controls/Tooltip";
 import { uuid } from "visual/utils/uuid";
+import { stripIds } from "visual/utils/models";
 import { capitalize } from "visual/utils/string";
 import { getStore } from "visual/redux/store";
 import { createGlobalBlock, createSavedBlock } from "visual/redux/actions";

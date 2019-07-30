@@ -1,18 +1,21 @@
 import React from "react";
+import { connect } from "react-redux";
 import classnames from "classnames";
 import _ from "underscore";
 import ScrollPane from "visual/component/ScrollPane";
 import EditorIcon from "visual/component/EditorIcon";
 import { blockThumbnailData } from "visual/utils/blocks";
 import { preloadImage } from "visual/utils/image";
-import { getStore } from "visual/redux/store";
-import { pageDataSelector, pageBlocksSelector } from "visual/redux/selectors";
+import {
+  pageDataSelector,
+  pageBlocksAssembledSelector
+} from "visual/redux/selectors";
 import { updatePage } from "visual/redux/actions";
 import { t } from "visual/utils/i18n";
 
 const MAX_THUMBNAIL_WIDTH = 132;
 
-export default class BlockThumbnail extends React.Component {
+class BlockThumbnail extends React.Component {
   static defaultProps = {
     label: "",
     className: "",
@@ -38,8 +41,7 @@ export default class BlockThumbnail extends React.Component {
   };
 
   handleInputChange = _.debounce((text, id) => {
-    const store = getStore();
-    const pageData = pageDataSelector(store.getState());
+    const { pageData, dispatch } = this.props;
     const blocks = pageData.items || [];
     const encodedText = encodeURIComponent(text);
 
@@ -78,7 +80,7 @@ export default class BlockThumbnail extends React.Component {
         : block;
     });
 
-    store.dispatch(
+    dispatch(
       updatePage({
         data: {
           ...pageData,
@@ -111,8 +113,8 @@ export default class BlockThumbnail extends React.Component {
   }
 
   renderThumbnails() {
-    const { value } = this.props;
-    const blocks = pageBlocksSelector(getStore().getState()).filter(
+    const { value, pageBlocksAssembled } = this.props;
+    const blocks = pageBlocksAssembled.filter(
       block => block.value._blockVisibility !== "unlisted"
     );
 
@@ -275,3 +277,10 @@ class AnchorInput extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  pageData: pageDataSelector(state),
+  pageBlocksAssembled: pageBlocksAssembledSelector(state)
+});
+
+export default connect(mapStateToProps)(BlockThumbnail);

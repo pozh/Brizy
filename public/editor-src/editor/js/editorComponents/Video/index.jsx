@@ -1,5 +1,6 @@
 import React from "react";
 import EditorComponent from "visual/editorComponents/EditorComponent";
+import classnames from "classnames";
 import CustomCSS from "visual/component/CustomCSS";
 import BoxResizer from "visual/component/BoxResizer";
 import Placeholder from "visual/component/Placeholder";
@@ -10,12 +11,8 @@ import {
 import Toolbar from "visual/component/Toolbar";
 import ThemeIcon from "visual/component/ThemeIcon";
 import * as toolbarConfig from "./toolbar";
-import {
-  styleClassName,
-  styleCSSVars,
-  wrapperStyleClassName,
-  wrapperStyleCSSVars
-} from "./styles";
+import { styleContent, styleWrapper } from "./styles";
+import { css } from "visual/utils/cssStyle";
 import defaultValue from "./defaultValue.json";
 
 const resizerPoints = ["topLeft", "topRight", "bottomLeft", "bottomRight"];
@@ -85,11 +82,28 @@ class Video extends EditorComponent {
     );
   }
 
-  renderForEdit(v) {
-    const { video, controls, coverImageSrc, videoPopulation } = v;
+  renderForEdit(v, vs) {
+    const { video, controls, coverImageSrc, videoPopulation, ratio } = v;
     const videoData = getVideoData(video);
 
     const videoSrc = this.getVideoSrc(v);
+    const classNameContent = classnames(
+      "brz-video",
+      css(
+        `${this.constructor.componentId}`,
+        `${this.getId()}`,
+        styleContent(vs, v, this.props)
+      )
+    );
+
+    const classNameWrapper = classnames(
+      `brz-image-fix-${ratio.replace(":", "-")}`,
+      css(
+        `${this.constructor.componentId}-wrapper`,
+        `${this.getId()}-wrapper`,
+        styleWrapper(vs, v)
+      )
+    );
 
     let content = coverImageSrc ? (
       this.renderCover(videoSrc)
@@ -101,15 +115,13 @@ class Video extends EditorComponent {
       content = <Placeholder icon="play" />;
     }
 
-    const style = { ...styleCSSVars(v, this.props), ...wrapperStyleCSSVars(v) };
-
     return (
       <Toolbar
         {...this.makeToolbarPropsFromConfig(toolbarConfig)}
         onClose={this.handleToolbarClose}
       >
         <CustomCSS selectorName={this.getId()} css={v.customCSS}>
-          <div className={styleClassName(v, this.props)} style={style}>
+          <div className={classNameContent}>
             <BoxResizer
               points={resizerPoints}
               meta={this.props.meta}
@@ -117,7 +129,7 @@ class Video extends EditorComponent {
               onChange={this.handleResizerChange}
             >
               <div className="brz-video-content">
-                <div className={wrapperStyleClassName(v)}>{content}</div>
+                <div className={classNameWrapper}>{content}</div>
               </div>
             </BoxResizer>
           </div>
@@ -126,9 +138,27 @@ class Video extends EditorComponent {
     );
   }
 
-  renderForView(v) {
-    const { coverImageSrc, controls, videoPopulation } = v;
+  renderForView(v, vs) {
+    const { coverImageSrc, controls, videoPopulation, ratio } = v;
     const videoSrc = this.getVideoSrc(v);
+
+    const classNameContent = classnames(
+      "brz-video",
+      css(
+        `${this.constructor.componentId}`,
+        `${this.getId()}`,
+        styleContent(vs, v, this.props)
+      )
+    );
+
+    const classNameWrapper = classnames(
+      `brz-image-fix-${ratio.replace(":", "-")}`,
+      css(
+        `${this.constructor.componentId}-wrapper`,
+        `${this.getId()}-wrapper`,
+        styleWrapper(vs, v)
+      )
+    );
     let content = coverImageSrc ? (
       this.renderCover(videoSrc)
     ) : (
@@ -143,19 +173,16 @@ class Video extends EditorComponent {
       content = <Placeholder icon="play" />;
     }
 
-    const style = { ...styleCSSVars(v, this.props), ...wrapperStyleCSSVars(v) };
-
     return (
       <CustomCSS selectorName={this.getId()} css={v.customCSS}>
         <div
-          className={styleClassName(v, this.props)}
-          style={style}
+          className={classNameContent}
           data-auto-play={Boolean(coverImageSrc)}
           data-controls={controls === "on"}
           data-population={videoPopulation}
         >
           <div className="brz-video-content">
-            <div className={wrapperStyleClassName(v)}>
+            <div className={classNameWrapper}>
               {content}
               {videoPopulation && (
                 <Placeholder className="brz-hidden" icon="play" />

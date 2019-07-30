@@ -41,9 +41,7 @@ export function defaultValueValue({
 }) {
   const deviceKey = defaultValueKey({ key, device, state });
 
-  return v[deviceKey] === null || v[deviceKey] === undefined
-    ? v[key]
-    : v[deviceKey];
+  return v[deviceKey] === null ? v[key] : v[deviceKey];
 }
 
 function defaultValueKeyByState(key, state) {

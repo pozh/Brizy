@@ -9,6 +9,7 @@ export function toolbarMargin({
   v,
   device,
   state,
+  devices = "all",
   position = 60,
   onChangeGrouped,
   onChangeUngrouped
@@ -17,6 +18,7 @@ export function toolbarMargin({
     id: "margin",
     type: "multiPicker",
     position,
+    devices,
     picker: {
       id: defaultValueKey({ key: "marginType", device, state }),
       label: t("Margin"),

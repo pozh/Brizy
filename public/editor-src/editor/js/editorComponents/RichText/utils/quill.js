@@ -53,6 +53,7 @@ if (IS_EDITOR) {
   registerParchment("tabletLetterSpacing", "brz-ls-sm");
   registerParchment("mobileLetterSpacing", "brz-ls-xs");
   registerParchment("font", "brz-ff");
+  registerParchment("fontType", "brz-ft");
   registerParchment("desktopWeight", "brz-fw-lg");
   registerParchment("intermediateTabletWeight", "brz-fw-sm-im");
   registerParchment("intermediateMobileWeight", "brz-fw-xs-im");

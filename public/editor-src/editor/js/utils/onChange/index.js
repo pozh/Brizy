@@ -13,14 +13,16 @@ export {
   onChangeBgImage,
   onChangeBgImageBgOpacity,
   onChangeBgImageDependencies,
-  onChangeBgImageColumnAndRowSyncTablet,
   onChangeBgImageColumnAndRowSyncMobile
 } from "./onChangeBgImage";
 
 // Border Style
 export {
   onChangeBorderStyle,
-  onChangeBorderStyleDependencies
+  onChangeBorderStyleDependencies,
+  onChangeBorderStyle2,
+  onChangeElementBorderStyleDependencies2,
+  onChangeContainerBorderStyleDependencies2
 } from "./onChangeBorderStyle";
 
 // Border Width
@@ -28,7 +30,12 @@ export {
   onChangeBorderWidthGrouped,
   onChangeBorderWidthGroupedDependencies,
   onChangeBorderWidthUngrouped,
-  onChangeBorderWidthUngroupedDependencies
+  onChangeBorderWidthUngroupedDependencies,
+  onChangeBorderWidthType2,
+  onChangeBorderWidthGrouped2,
+  onChangeBorderWidthGroupedDependencies2,
+  onChangeBorderWidthUngrouped2,
+  onChangeBorderWidthUngroupedDependencies2
 } from "./onChangeBorderWidth";
 
 // Border Radius
@@ -52,10 +59,17 @@ export {
   onChangeBgColorHexAndOpacity,
   onChangeBgColorHexAndOpacityPalette,
   onChangeBgColorHexAndOpacityDependencies,
-  onChangeBgColorHexAndOpacityColumnAndRowSyncTablet,
   onChangeBgColorHexAndOpacityColumnAndRowSyncMobile,
   onChangeBgColorPalette,
-  onChangeBgColorPaletteOpacity
+  onChangeBgColorPaletteOpacity,
+  onChangeBgColorType2,
+  onChangeGradientRange2,
+  onChangeBgColorHexAndOpacity2,
+  onChangeBgColorHexAndOpacityPalette2,
+  onChangeBgColorHexAndOpacityDependencies2,
+  onChangeBgColorHexAndOpacityColumnAndRowSyncMobile2,
+  onChangeBgColorPalette2,
+  onChangeBgColorPaletteOpacity2
 } from "./onChangeBgColor";
 
 // Border Color
@@ -66,7 +80,15 @@ export {
   onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet,
   onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile,
   onChangeBorderColorPalette,
-  onChangeBorderColorPaletteOpacity
+  onChangeBorderColorPaletteOpacity,
+  onChangeBorderColorHexAndOpacity2,
+  onChangeBorderColorHexAndOpacityPalette2,
+  onChangeElementBorderColorHexAndOpacityDependencies2,
+  onChangeContainerBorderColorHexAndOpacityDependencies2,
+  onChangeBorderColorHexAndOpacityColumnAndRowSyncTablet2,
+  onChangeBorderColorHexAndOpacityColumnAndRowSyncMobile2,
+  onChangeBorderColorPalette2,
+  onChangeBorderColorPaletteOpacity2
 } from "./onChangeBorderColor";
 
 // Box Shadow
@@ -75,7 +97,17 @@ export {
   onChangeBoxShadowHexAndOpacityPalette,
   onChangeBoxShadowHexAndOpacityDependencies,
   onChangeBoxShadowPalette,
-  onChangeBoxShadowPaletteOpacity
+  onChangeBoxShadowPaletteOpacity,
+  onChangeBoxShadowHexAndOpacity2,
+  onChangeBoxShadowHexAndOpacityPalette2,
+  onChangeBoxShadowHexAndOpacityDependencies2,
+  onChangeBoxShadowPalette2,
+  onChangeBoxShadowPaletteOpacity2,
+  onChangeBoxShadowStyle2,
+  onChangeBoxShadowStyleDependencies2,
+  onChangeBoxShadow2,
+  onChangeBoxShadowDependencies2,
+  onChangeBoxShadowOpacity2
 } from "./onChangeBoxShadow";
 
 // Padding
@@ -104,6 +136,87 @@ export {
   onChangeElementProgressBarBg2ColorPaletteOpacity
 } from "./onChangeElementProgressBar";
 
+export {
+  onChangeElementIconBorderColorHex2,
+  onChangeElementIconBorderColorPalette2,
+  onChangeElementIconBorderColorFields2,
+  onChangeElementIconBorderHoverColorHex2,
+  onChangeElementIconBorderHoverColorPalette2,
+  onChangeElementIconBorderHoverColorFields2
+} from "./onChangeElementIcon";
+
+export {
+  onChangeElementButtonBorderColorHex2,
+  onChangeElementButtonBorderColorPalette2,
+  onChangeElementButtonBorderColorFields2,
+  onChangeElementButtonBorderHoverColorHex2,
+  onChangeElementButtonBorderHoverColorPalette2,
+  onChangeElementButtonBorderHoverColorFields2,
+  onChangeBgColorHexButton2,
+  onChangeBgColorPaletteButton2,
+  onChangeBgColorFieldsButton2,
+  onChangeHoverBgColorHexButton2,
+  onChangeHoverBgColorPaletteButton2,
+  onChangeHoverBgColorFieldsButton2
+} from "./onChangeElementButton";
+
+export {
+  onChangeColorHexButtonIcon2,
+  onChangeColorPaletteButtonIcon2,
+  onChangeColorFieldsButtonIcon2,
+  onChangeHoverColorHexButtonIcon2,
+  onChangeHoverColorPaletteButtonIcon2,
+  onChangeHoverColorFieldsButtonIcon2
+} from "./onChangeElementButtonIcon";
+
+export {
+  //Color
+  onChangeMenuColorHex2,
+  onChangeMenuColorPalette2,
+  onChangeMenuColorFields2,
+  onChangeMenuHoverColorHex2,
+  onChangeMenuHoverColorPalette2,
+  onChangeMenuHoverColorFields2,
+  onChangeColorHexMMenu2,
+  onChangeColorPaletteMMenu2,
+  onChangeColorFieldsMMenu2,
+  onChangeHoverColorHexMMenu2,
+  onChangeHoverColorPaletteMMenu2,
+  onChangeHoverColorFieldsMMenu2,
+  onChangeColorHexSubMenu2,
+  onChangeColorPaletteSubMenu2,
+  onChangeColorFieldsSubMenu2,
+  onChangeHoverColorHexSubMenu2,
+  onChangeHoverColorPaletteSubMenu2,
+  onChangeHoverColorFieldsSubMenu2,
+  onChangeColorHexIconMenu2,
+  onChangeColorPaletteIconMenu2,
+  onChangeColorFieldsIconMenu2,
+  onChangeTabletColorHexIconMMenu2,
+  onChangeTabletColorPaletteIconMMenu2,
+  onChangeTabletColorFieldsIconMMenu2,
+  onChangeMobileColorHexIconMMenu2,
+  onChangeMobileColorPaletteIconMMenu2,
+  onChangeMobileColorFieldsIconMMenu2,
+  //BG
+  onChangeBgColorHexMMenu2,
+  onChangeBgColorPaletteMMenu2,
+  onChangeBgColorFieldsMMenu2,
+  onChangeBgColorHexSubMenu2,
+  onChangeBgColorPaletteSubMenu2,
+  onChangeBgColorFieldsSubMenu2,
+  onChangeBgHoverColorHexSubMenu2,
+  onChangeBgHoverColorPaletteSubMenu2,
+  onChangeBgHoverColorFieldsSubMenu2,
+  //Border
+  onChangeBorderColorHexMMenu2,
+  onChangeBorderColorPaletteMMenu2,
+  onChangeBorderColorFieldsMMenu2,
+  onChangeBorderColorHexSubMenu2,
+  onChangeBorderColorPaletteSubMenu2,
+  onChangeBorderColorFieldsSubMenu2
+} from "./onChangeElementMenu";
+
 // Typography ... ToDo.. must be changes with new typography and deleted in future
 export {
   onChangeTypography,
@@ -117,3 +230,6 @@ export {
   mobileSyncOnChange,
   keySyncOnChange
 } from "./device";
+
+// Typography
+export { onChangeTypography2 } from "./onChangeTypography2";

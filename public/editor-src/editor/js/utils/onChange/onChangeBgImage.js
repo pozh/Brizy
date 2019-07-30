@@ -117,14 +117,6 @@ export function onChangeBgImageDependencies({ v, device, state, src }) {
 // ToDo.. Padding de aici nu lucreaza corect (lucreaza corect daca iai in calcul doar BG color, Border Color sau BG Image sar daca unesti citeva nu merge )
 // Trebuei de facut ceva similar cu dependencies doar ca intre devices
 // Codul asta trebuei de adaugat la bg color, border color, width, radius, bg image peste tot. Acum el e adaugat doar la BG image, color si Border color
-export function onChangeBgImageColumnAndRowSyncTablet({ v, src }) {
-  return {
-    // Tablet
-    tabletPaddingRight: !src ? 0 : v.tempTabletPaddingRight,
-    tabletPaddingLeft: !src ? 0 : v.tempTabletPaddingLeft
-  };
-}
-
 export function onChangeBgImageColumnAndRowSyncMobile({ v, src }) {
   return {
     // Mobile

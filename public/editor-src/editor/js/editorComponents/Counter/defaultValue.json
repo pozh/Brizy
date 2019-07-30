@@ -5,11 +5,19 @@
     "duration": 2
   },
 
+  "toolbar": {
+    "tabsState": "",
+    "tabsColor": ""
+  },
+
   "style": {
     "className": "",
 
     "fontStyle": "",
-    "fontFamily": "roboto",
+    "fontFamilyType": "google",
+    "families": {
+      "fontFamily": "roboto"
+    },
     "fontSize": 56,
     "fontWeight": 400,
     "lineHeight": 1.3,

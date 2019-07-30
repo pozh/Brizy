@@ -1,5 +1,6 @@
 import React from "react";
 import EditorComponent from "visual/editorComponents/EditorComponent";
+import classnames from "classnames";
 import CustomCSS from "visual/component/CustomCSS";
 import Items from "./items";
 import Background from "visual/component/Background";
@@ -15,15 +16,8 @@ import {
 } from "visual/config/columns";
 import { CollapsibleToolbar } from "visual/component/Toolbar";
 import * as toolbarConfig from "./toolbar";
-import {
-  bgStyleClassName,
-  bgStyleCSSVars,
-  itemsStyleClassName,
-  itemsStyleCSSVars,
-  containerStyleClassName,
-  containerStyleCSSVars,
-  contentStyleClassName
-} from "./styles";
+import { styleBg, styleContainer, styleContainerWrap } from "./styles";
+import { css } from "visual/utils/cssStyle";
 import defaultValue from "./defaultValue.json";
 import { getStore } from "visual/redux/store";
 import { tabletSyncOnChange, mobileSyncOnChange } from "visual/utils/onChange";
@@ -144,10 +138,9 @@ class SectionItem extends EditorComponent {
     );
   }
 
-  renderItems(v) {
-
-
+  renderItems(v, vs) {
     const {
+      containerClassName,
       media,
       bgImageSrc,
       bgPopulation,
@@ -164,8 +157,32 @@ class SectionItem extends EditorComponent {
 
     const meta = this.getMeta(v);
 
+    const classNameBg = classnames(
+      css(
+        `${this.constructor.componentId}-bg`,
+        `${this.getId()}-bg`,
+        styleBg(vs, v, this.props)
+      )
+    );
+    const classNameContainer = classnames(
+      "brz-container",
+      containerClassName,
+      css(
+        `${this.constructor.componentId}-container`,
+        `${this.getId()}-container`,
+        styleContainer(vs, v)
+      )
+    );
+    const classNameContainerWrap = classnames(
+      "brz-container__wrap",
+      css(
+        `${this.constructor.componentId}-containerWrap`,
+        `${this.getId()}-containerWrap`,
+        styleContainerWrap(vs, v)
+      )
+    );
     let bgProps = {
-      className: bgStyleClassName(v, this.props),
+      className: classNameBg,
       imageSrc: bgImageSrc || bgPopulation,
       colorOpacity: bgColorOpacity,
       parallax: bgAttachment === "animated" && !meta.section.isSlider,
@@ -200,14 +217,14 @@ class SectionItem extends EditorComponent {
 
     const itemsProps = this.makeSubcomponentProps({
       bindWithKey: "items",
-      className: itemsStyleClassName(v),
+      className: classNameContainer,
       meta
     });
 
     return (
       <Background {...bgProps}>
         <PaddingResizer value={v} onChange={this.handlePaddingResizerChange}>
-          <div className={containerStyleClassName(v)}>
+          <div className={classNameContainerWrap}>
             <Items {...itemsProps} />
           </div>
         </PaddingResizer>
@@ -215,18 +232,21 @@ class SectionItem extends EditorComponent {
     );
   }
 
-  renderForEdit(v) {
+  renderForEdit(v, vs) {
+    const { className } = v;
 
-    const styles = {
-      ...bgStyleCSSVars(v, this.props),
-      ...itemsStyleCSSVars(v),
-      ...containerStyleCSSVars(v)
-    };
+    const classNameSectionContent = classnames(
+      "brz-section__content",
+      className
+    );
 
     return (
       <CustomCSS selectorName={this.getId()} css={v.customCSS}>
-        <div className={contentStyleClassName(v)} style={styles}>
-          <Roles allow={["admin"]} fallbackRender={() => this.renderItems(v)}>
+        <div className={classNameSectionContent}>
+          <Roles
+            allow={["admin"]}
+            fallbackRender={() => this.renderItems(v, vs)}
+          >
             <ContainerBorder
               ref={el => {
                 this.containerBorder = el;
@@ -238,7 +258,7 @@ class SectionItem extends EditorComponent {
               path={this.getPath()}
             >
               {this.renderToolbar(v)}
-              {this.renderItems(v)}
+              {this.renderItems(v, vs)}
             </ContainerBorder>
           </Roles>
         </div>
@@ -246,10 +266,16 @@ class SectionItem extends EditorComponent {
     );
   }
 
-  renderForView(v) {
+  renderForView(v, vs) {
+    const { className } = v;
+    const classNameSectionContent = classnames(
+      "brz-section__content",
+      className
+    );
+
     return (
       <CustomCSS selectorName={this.getId()} css={v.customCSS}>
-        <div className={contentStyleClassName(v)}>{this.renderItems(v)}</div>
+        <div className={classNameSectionContent}>{this.renderItems(v, vs)}</div>
       </CustomCSS>
     );
   }

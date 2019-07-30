@@ -24,18 +24,24 @@ import {
   weightTypes,
   getWeight,
   getWeightChoices,
-  makeFontsUrl,
-  makeRichTextFontFamiliesCSS,
+  makeSubsetGoogleFontsUrl,
+  makeRichTextFontGoogleCSS,
+  makeRichTextFontUploadCSS,
   makeRichTextFontStylesCSS
 } from "visual/utils/fonts";
 import {
   defaultValueValue,
+  defaultValueKey,
   tabletSyncOnChange,
   mobileSyncOnChange,
   onChangeTypography,
   onChangeTypographyMobile
 } from "visual/utils/onChange";
-import { toolbarCustomCSS } from "visual/utils/toolbar";
+import {
+  toolbarColor2,
+  toolbarColorHexField2,
+  toolbarCustomCSS
+} from "visual/utils/toolbar";
 
 global.Brizy = {
   config: Config,
@@ -64,17 +70,21 @@ global.Brizy = {
     weightTypes,
     getWeight,
     getWeightChoices,
-    makeFontsUrl,
-    makeRichTextFontFamiliesCSS,
+    makeSubsetGoogleFontsUrl,
+    makeRichTextFontGoogleCSS,
+    makeRichTextFontUploadCSS,
     makeRichTextFontStylesCSS,
 
     defaultValueValue,
+    defaultValueKey,
     tabletSyncOnChange,
     mobileSyncOnChange,
     onChangeTypography,
     onChangeTypographyMobile
   },
   toolbar: {
+    toolbarColor2,
+    toolbarColorHexField2,
     toolbarCustomCSS
   }
 };

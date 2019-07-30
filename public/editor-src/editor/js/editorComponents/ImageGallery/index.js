@@ -7,7 +7,9 @@ import CustomCSS from "visual/component/CustomCSS";
 import Items from "./items";
 import * as parentToolbarExtend from "./parentExtendToolbar";
 import defaultValue from "./defaultValue.json";
-import { styleClassName, styleCSSVars } from "./styles";
+import classnames from "classnames";
+import { style } from "./styles";
+import { css } from "visual/utils/cssStyle";
 
 class ImageGallery extends EditorComponent {
   static get componentId() {
@@ -76,7 +78,7 @@ class ImageGallery extends EditorComponent {
     });
   }
 
-  renderForEdit(v) {
+  renderForEdit(v, vs) {
     const itemProps = this.makeSubcomponentProps({
       bindWithKey: "items",
       itemProps: {
@@ -85,13 +87,15 @@ class ImageGallery extends EditorComponent {
       }
     });
 
+    const className = classnames(
+      "brz-image__gallery",
+      { "brz-image__gallery-lightbox": v.lightBox === "on" },
+      css(`${this.constructor.componentId}`, `${this.getId()}`, style(vs, v))
+    );
+
     return (
       <CustomCSS selectorName={this.getId()} css={v.customCSS}>
-        <div
-          ref={this.handleRef}
-          className={styleClassName(v)}
-          style={styleCSSVars(v)}
-        >
+        <div ref={this.handleRef} className={className}>
           <Items {...itemProps} />
         </div>
       </CustomCSS>

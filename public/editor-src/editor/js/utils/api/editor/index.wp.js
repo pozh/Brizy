@@ -1,13 +1,18 @@
-import _ from "underscore";
 import jQuery from "jquery";
 import Promise from "promise";
 import Config from "visual/global/Config";
 import {
   parsePage,
   stringifyPage,
-  parseGlobals,
-  stringifyGlobals
+  parseProject,
+  stringifyProject,
+  parseGlobalBlock,
+  stringifyGlobalBlock,
+  parseSavedBlock,
+  stringifySavedBlock
 } from "./adapter";
+
+const apiUrl = Config.get("wp").api.url;
 
 export function request(action, data) {
   const { hash, url } = Config.get("wp").api;
@@ -56,6 +61,41 @@ export function persistentRequest(ajaxSettings) {
   });
 }
 
+// a thin wrapper around fetch
+export function request2(url, config = {}) {
+  // will see later if we'll have to hardcode
+  // some settings into config like we do for brizy cloud
+  return fetch(url, config);
+}
+
+// project
+
+export function getProject() {
+  const { getProject } = Config.get("wp").api;
+
+  return persistentRequest({
+    type: "POST",
+    dataType: "json",
+    data: { action: getProject }
+  }).then(parseProject);
+}
+
+export function updateProject(project, meta = {}) {
+  const { setProject } = Config.get("wp").api;
+  const { is_autosave = 1 } = meta;
+  const { data } = stringifyProject(project);
+
+  return persistentRequest({
+    type: "POST",
+    dataType: "json",
+    data: {
+      action: setProject,
+      data,
+      is_autosave
+    }
+  });
+}
+
 // page
 
 export function getPages() {
@@ -86,35 +126,6 @@ export function updatePage(page, meta = {}) {
   });
 }
 
-// globals
-
-export function getGlobals() {
-  const { getGlobals } = Config.get("wp").api;
-
-  return persistentRequest({
-    type: "POST",
-    dataType: "json",
-    data: { action: getGlobals }
-  }).then(r => {
-    return parseGlobals(r.gb);
-  });
-}
-
-export function updateGlobals(data, meta = {}) {
-  const { setGlobals } = Config.get("wp").api;
-  const { is_autosave = 1 } = meta;
-
-  return persistentRequest({
-    type: "POST",
-    dataType: "json",
-    data: {
-      action: setGlobals,
-      gb: stringifyGlobals(data),
-      is_autosave
-    }
-  });
-}
-
 // global blocks
 
 export function getGlobalBlocks() {
@@ -124,42 +135,42 @@ export function getGlobalBlocks() {
     type: "POST",
     dataType: "json",
     data: { action: getGlobalBlockList }
-  }).then(r => {
-    return r.reduce((acc, block) => {
-      acc[block.uid] = JSON.parse(block.data);
+  }).then(({ data }) => {
+    return data.map(parseGlobalBlock).reduce((acc, { uid, data }) => {
+      acc[uid] = data;
 
       return acc;
     }, {});
   });
 }
 
-export function createGlobalBlock({ id, data }) {
+export function createGlobalBlock(globalBlock) {
   const { createGlobalBlock } = Config.get("wp").api;
-  const data_ = JSON.stringify(data);
+  const { id: uid, data } = stringifyGlobalBlock(globalBlock);
 
   return persistentRequest({
     type: "POST",
     dataType: "json",
     data: {
       action: createGlobalBlock,
-      uid: id,
-      data: data_
+      uid,
+      data
     }
   });
 }
 
-export function updateGlobalBlock({ id, data }, meta = {}) {
+export function updateGlobalBlock(globalBlock, meta = {}) {
   const { updateGlobalBlock } = Config.get("wp").api;
   const { is_autosave = 1 } = meta;
-  const data_ = JSON.stringify(data);
+  const { id: uid, data } = stringifyGlobalBlock(globalBlock);
 
   return persistentRequest({
     type: "POST",
     dataType: "json",
     data: {
       action: updateGlobalBlock,
-      uid: id,
-      data: data_,
+      uid,
+      data,
       is_autosave
     }
   });
@@ -174,42 +185,42 @@ export function getSavedBlocks() {
     type: "POST",
     dataType: "json",
     data: { action: getSavedBlockList }
-  }).then(r => {
-    return r.reduce((acc, block) => {
-      acc[block.uid] = JSON.parse(block.data);
+  }).then(({ data }) => {
+    return data.map(parseSavedBlock).reduce((acc, { uid, data }) => {
+      acc[uid] = data;
 
       return acc;
     }, {});
   });
 }
 
-export function createSavedBlock({ id, data }) {
+export function createSavedBlock(savedBlock) {
   const { createSavedBlock } = Config.get("wp").api;
-  const data_ = JSON.stringify(data);
+  const { id: uid, data } = stringifySavedBlock(savedBlock);
 
   return persistentRequest({
     type: "POST",
     dataType: "json",
     data: {
       action: createSavedBlock,
-      uid: id,
-      data: data_
+      uid,
+      data
     }
   });
 }
 
-export function updateSavedBlock({ id, data }, meta = {}) {
+export function updateSavedBlock(savedBlock, meta = {}) {
   const { updateSavedBlock } = Config.get("wp").api;
   const { is_autosave = 0 } = meta;
-  const data_ = JSON.stringify(data);
+  const { id: uid, data } = stringifySavedBlock(savedBlock);
 
   return persistentRequest({
     type: "POST",
     dataType: "json",
     data: {
       action: updateSavedBlock,
-      uid: id,
-      data: data_,
+      uid,
+      data,
       is_autosave
     }
   });
@@ -297,4 +308,66 @@ export function getMenus() {
 export function getTerms(taxonomy) {
   const apiConfig = Config.get("wp").api;
   return request(apiConfig.getTerms, { taxonomy });
+}
+
+export function getUploadedFonts() {
+  const apiConfig = Config.get("wp").api;
+  return request(apiConfig.getFonts, {}).then(({ data }) => data);
+}
+
+// screenshots
+
+export function createBlockScreenshot({ base64, blockType }) {
+  const {
+    page,
+    api: { createBlockScreenshot }
+  } = Config.get("wp");
+  const attachment = base64.replace(/data:image\/.+;base64,/, "");
+
+  return request2(apiUrl, {
+    method: "POST",
+    credentials: "omit",
+    body: new URLSearchParams({
+      action: createBlockScreenshot,
+      post: page,
+      block_type: blockType,
+      ibsf: attachment
+    })
+  })
+    .then(r => r.json())
+    .then(rj => {
+      if (rj.success) {
+        return rj.data;
+      }
+
+      throw rj;
+    });
+}
+
+export function updateBlockScreenshot({ id, base64, blockType }) {
+  const {
+    page,
+    api: { updateBlockScreenshot }
+  } = Config.get("wp");
+  const attachment = base64.replace(/data:image\/.+;base64,/, "");
+
+  return request2(apiUrl, {
+    method: "POST",
+    credentials: "omit",
+    body: new URLSearchParams({
+      action: updateBlockScreenshot,
+      post: page,
+      block_type: blockType,
+      id,
+      ibsf: attachment
+    })
+  })
+    .then(r => r.json())
+    .then(rj => {
+      if (rj.success) {
+        return rj.data;
+      }
+
+      throw rj;
+    });
 }

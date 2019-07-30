@@ -1,5 +1,5 @@
 import { isHex } from "visual/utils/color";
-import { getUsedFonts } from "visual/utils/fonts";
+import { getFontStyle, getUsedFonts } from "visual/utils/fonts";
 import { getDynamicContentByPlaceholder } from "visual/utils/options";
 import { decodeFromString } from "visual/utils/string";
 
@@ -42,14 +42,18 @@ const getTagName = ({ header, pre }, $elem) => {
 const getFirstValue = format => (Array.isArray(format) ? format[0] : format);
 
 const getCurrentFont = font => {
-  const fontKeys = getUsedFonts().map(item => item["id"]);
+  const fontFamilies = getUsedFonts().map(({ family }) => family);
   const currentFonts = font.split(",");
 
   const currentFont = currentFonts.find(item =>
-    fontKeys.includes(formatStr(item))
+    fontFamilies.includes(item.replace(/"/g, ""))
   );
 
   return currentFont ? formatStr(currentFont) : null;
+};
+
+const getCurrentFontStyle = fontStyle => {
+  return getFontStyle(fontStyle) || {};
 };
 
 const getLink = value => {
@@ -119,11 +123,47 @@ export const getFormats = ($elem, format = {}, deviceMode) => {
       opacity: format.opacity ? getFirstValue(format.opacity) : cssOpacity
     },
     colorPalette: format.colorPalette || null,
-    font: format.font ? getFirstValue(format.font) : getCurrentFont(font),
+
+    font: format.fontStyle
+      ? getCurrentFontStyle(format.fontStyle).fontFamily
+      : format.font
+      ? getFirstValue(format.font)
+      : getCurrentFont(font),
+
+    fontType: format.fontStyle
+      ? getCurrentFontStyle(format.fontStyle).fontFamilyType
+      : format.fontType
+      ? getFirstValue(format.fontType)
+      : "google",
+
     fontStyle: format.fontStyle || null,
-    height: formatHeight
+
+    weight: format.fontStyle
+      ? getCurrentFontStyle(format.fontStyle).fontWeight
+      : formatWeight
+      ? getFirstValue(formatWeight)
+      : String(weight),
+
+    height: format.fontStyle
+      ? getCurrentFontStyle(format.fontStyle).lineHeight
+      : formatHeight
       ? getFirstValue(formatHeight).replace("_", ".")
       : String(height),
+
+    size: format.fontStyle
+      ? getCurrentFontStyle(format.fontStyle).fontSize
+      : formatSize
+      ? getFirstValue(formatSize)
+      : size,
+
+    letterSpacing: format.fontStyle
+      ? getCurrentFontStyle(format.fontStyle).letterSpacing
+      : formatLetterSpacing
+      ? getFirstValue(formatLetterSpacing)
+          .replace("m_", "-")
+          .replace("_", ".")
+      : String(letterSpacing),
+
     horizontalAlign: format.horizontalAlign || align,
     intermediateTabletHeight: format.intermediateTabletHeight || null,
     intermediateMobileHeight: format.intermediateMobileHeight || null,
@@ -136,11 +176,6 @@ export const getFormats = ($elem, format = {}, deviceMode) => {
     intermediateTabletWeight: format.intermediateTabletWeight || null,
     intermediateMobileWeight: format.intermediateMobileWeight || null,
 
-    letterSpacing: formatLetterSpacing
-      ? getFirstValue(formatLetterSpacing)
-          .replace("m_", "-")
-          .replace("_", ".")
-      : String(letterSpacing),
     ...link,
     ...populationColor,
     list: format.list ? getFirstValue(format.list) : null,
@@ -167,8 +202,6 @@ export const getFormats = ($elem, format = {}, deviceMode) => {
       : null,
     tabletWeight: format.tabletWeight || null,
     mobileWeight: format.mobileWeight || null,
-    size: formatSize ? getFirstValue(formatSize) : size,
-    tagName: getTagName(format, $elem),
-    weight: formatWeight ? getFirstValue(formatWeight) : String(weight)
+    tagName: getTagName(format, $elem)
   };
 };

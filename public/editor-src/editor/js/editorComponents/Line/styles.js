@@ -2,9 +2,9 @@ import { renderStyles } from "visual/utils/cssStyle";
 
 export function style(vs, v) {
   const styles = {
-    ".brz &": ["cssStyleSizeWidthPercent"],
-    ".brz & .brz-hr": ["cssStyleElementLineBorder"]
+    ".brz &&:hover": { standart: ["cssStyleSizeWidthPercent"] },
+    ".brz &&:hover .brz-hr": { standart: ["cssStyleElementLineBorder"] }
   };
 
-  return [renderStyles({ vs, styles }), renderStyles({ vs, v, styles })];
+  return renderStyles({ vs, v, styles });
 }

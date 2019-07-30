@@ -36,11 +36,9 @@
   },
 
   "toolbar": {
-    "tabsState": "tabNormal",
-
-    "tabsCurrentElement": "tabCurrentElement",
-
-    "tabsColor": "tabOverlay"
+    "tabsState": "",
+    "tabsCurrentElement": "",
+    "tabsColor": ""
   },
 
   "style": {
@@ -170,7 +168,27 @@
     "tempHoverBorderColorOpacity": null,
     "tempHoverBorderColorPalette": null,
 
+    "hoverTransition": 50,
+
+    "containerType": "boxed",
+    "containerSize": 100,
+
+    "paddingType": "grouped",
+    "padding": 10,
+    "paddingTop": 10,
+    "paddingRight": "initial",
+    "paddingBottom": 10,
+    "paddingLeft": "initial",
+
+    "paddingSuffix": "px",
+    "paddingTopSuffix": "px",
+    "paddingRightSuffix": "",
+    "paddingBottomSuffix": "px",
+    "paddingLeftSuffix": "",
+
     "boxShadow": "off",
+
+    "tempBoxShadow": "inset",
 
     "boxShadowColorHex": "#000000",
     "boxShadowColorOpacity": 1,
@@ -191,6 +209,8 @@
 
     "hoverBoxShadow": null,
 
+    "tempHoverBoxShadow": null,
+
     "hoverBoxShadowColorHex": null,
     "hoverBoxShadowColorOpacity": null,
     "hoverBoxShadowColorPalette": null,
@@ -199,32 +219,31 @@
     "tempHoverBoxShadowColorOpacity": null,
 
     "hoverBoxShadowBlur": null,
+    "hoverBoxShadowSpread": null,
     "hoverBoxShadowVertical": null,
+    "hoverBoxShadowHorizontal": null,
 
     "tempHoverBoxShadowBlur": null,
+    "tempHoverBoxShadowSpread": null,
     "tempHoverBoxShadowVertical": null,
-
-    "hoverTransition": 50,
-
-    "containerType": "boxed",
-    "containerSize": 100,
-
-    "paddingType": "grouped",
-    "padding": 10,
-    "paddingTop": 10,
-    "paddingBottom": 10,
-
-    "paddingSuffix": "px",
-    "paddingTopSuffix": "px",
-    "paddingBottomSuffix": "px",
+    "tempHoverBoxShadowHorizontal": null,
 
     "shape": "top",
+
     "shapeTopColorHex": "#000000",
     "shapeTopColorOpacity": 1,
     "shapeTopColorPalette": "",
+
+    "tempShapeTopColorOpacity": 1,
+    "tempShapeTopColorPalette": "",
+
     "shapeBottomColorHex": "#000000",
     "shapeBottomColorOpacity": 1,
     "shapeBottomColorPalette": "",
+
+    "tempShapeBottomColorOpacity": 1,
+    "tempShapeBottomColorPalette": "",
+
     "tempShapeColorOpacity": 1,
     "shapeTopHeight": 100,
     "shapeTopHeightSuffix": "px",
@@ -304,7 +323,28 @@
     "tempTabletBorderColorOpacity": null,
     "tempTabletBorderColorPalette": null,
 
+    "tabletPaddingType": "grouped",
+    "tabletPadding": 10,
+    "tabletPaddingTop": 10,
+    "tabletPaddingRight": "initial",
+    "tabletPaddingBottom": 10,
+    "tabletPaddingLeft": "initial",
+
+    "tabletPaddingSuffix": "px",
+    "tabletPaddingTopSuffix": "px",
+    "tabletPaddingRightSuffix": "",
+    "tabletPaddingBottomSuffix": "px",
+    "tabletPaddingLeftSuffix": "",
+
+    "tabletShape": null,
+    "tabletShapeTopHeight": null,
+    "tabletShapeTopHeightSuffix": null,
+    "tabletShapeBottomHeight": null,
+    "tabletShapeBottomHeightSuffix": null,
+
     "tabletBoxShadow": null,
+
+    "tempTabletBoxShadow": null,
 
     "tabletBoxShadowColorHex": null,
     "tabletBoxShadowColorOpacity": null,
@@ -322,21 +362,6 @@
     "tempTabletBoxShadowSpread": null,
     "tempTabletBoxShadowVertical": null,
     "tempTabletBoxShadowHorizontal": null,
-
-    "tabletPaddingType": "grouped",
-    "tabletPadding": 10,
-    "tabletPaddingTop": 10,
-    "tabletPaddingBottom": 10,
-
-    "tabletPaddingSuffix": "px",
-    "tabletPaddingTopSuffix": "px",
-    "tabletPaddingBottomSuffix": "px",
-
-    "tabletShape": null,
-    "tabletShapeTopHeight": null,
-    "tabletShapeTopHeightSuffix": null,
-    "tabletShapeBottomHeight": null,
-    "tabletShapeBottomHeightSuffix": null,
 
     "mobileBgColorType": null,
 
@@ -402,6 +427,8 @@
 
     "mobileBoxShadow": null,
 
+    "tempMobileBoxShadow": null,
+
     "mobileBoxShadowColorHex": null,
     "mobileBoxShadowColorOpacity": null,
     "mobileBoxShadowColorPalette": null,
@@ -422,11 +449,15 @@
     "mobilePaddingType": "grouped",
     "mobilePadding": 10,
     "mobilePaddingTop": 10,
+    "mobilePaddingRight": "initial",
     "mobilePaddingBottom": 10,
+    "mobilePaddingLeft": "initial",
 
     "mobilePaddingSuffix": "px",
     "mobilePaddingTopSuffix": "px",
+    "mobilePaddingRightSuffix": "",
     "mobilePaddingBottomSuffix": "px",
+    "mobilePaddingLeftSuffix": "",
 
     "mobileShape": null,
     "mobileShapeTopHeight": null,

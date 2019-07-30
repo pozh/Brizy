@@ -76,6 +76,7 @@ export function styleClassName(v) {
     const {
       menuName,
       fontFamily,
+      fontFamilyType,
       fontSize,
       lineHeight,
       fontWeight,
@@ -104,7 +105,8 @@ export function styleClassName(v) {
         width: menuName ? "auto" : "100%"
       },
       ".brz & .menu": {
-        fontFamily: getFontById(fontFamily).family
+        fontFamily: getFontById({ family: fontFamily, type: fontFamilyType })
+          .family
       },
       ".brz & .menu > .menu-item": {
         fontSize,
@@ -202,6 +204,7 @@ export function styleCSSVars(v) {
   const {
     menuName,
     fontFamily,
+    fontFamilyType,
     fontSize,
     fontWeight,
     lineHeight,
@@ -230,7 +233,8 @@ export function styleCSSVars(v) {
     "--width": menuName ? "auto" : "100%",
 
     // Typography
-    "--fontFamily": getFontById(fontFamily).family,
+    "--fontFamily": getFontById({ family: fontFamily, type: fontFamilyType })
+      .family,
     "--fontWeight": fontWeight,
     "--fontSize": `${fontSize}px`,
     "--lineHeight": lineHeight,

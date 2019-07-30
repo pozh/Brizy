@@ -78,11 +78,9 @@
   },
 
   "toolbar": {
-    "tabsState": "tabNormal",
-
-    "tabsCurrentElement": "tabCurrentElement",
-
-    "tabsColor": "tabOverlay"
+    "tabsState": "",
+    "tabsCurrentElement": "",
+    "tabsColor": ""
   },
 
   "animation": {
@@ -221,6 +219,8 @@
 
     "boxShadow": "off",
 
+    "tempBoxShadow": "on",
+
     "boxShadowColorHex": "#000000",
     "boxShadowColorOpacity": 1,
     "boxShadowColorPalette": "",
@@ -239,6 +239,8 @@
     "tempBoxShadowHorizontal": 1,
 
     "hoverBoxShadow": null,
+
+    "tempHoverBoxShadow": null,
 
     "hoverBoxShadowColorHex": null,
     "hoverBoxShadowColorOpacity": null,
@@ -280,11 +282,15 @@
     "marginType": "grouped",
     "margin": 0,
     "marginTop": 0,
+    "marginRight": "auto",
     "marginBottom": 0,
+    "marginLeft": "auto",
 
     "marginSuffix": "px",
     "marginTopSuffix": "px",
+    "marginRightSuffix": "",
     "marginBottomSuffix": "px",
+    "marginLeftSuffix": "",
 
     "customClassName": "",
 
@@ -354,6 +360,8 @@
 
     "tabletBoxShadow": null,
 
+    "tempTabletBoxShadow": null,
+
     "tabletBoxShadowColorHex": null,
     "tabletBoxShadowColorOpacity": null,
     "tabletBoxShadowColorPalette": null,
@@ -393,11 +401,15 @@
     "tabletMarginType": "grouped",
     "tabletMargin": 0,
     "tabletMarginTop": 10,
+    "tabletMarginRight": "auto",
     "tabletMarginBottom": 10,
+    "tabletMarginLeft": "auto",
 
     "tabletMarginSuffix": "px",
     "tabletMarginTopSuffix": "px",
+    "tabletMarginRightSuffix": "",
     "tabletMarginBottomSuffix": "px",
+    "tabletMarginLeftSuffix": "",
 
     "mobileReverseColumns": "off",
 
@@ -465,6 +477,8 @@
 
     "mobileBoxShadow": null,
 
+    "tempMobileBoxShadow": null,
+
     "mobileBoxShadowColorHex": null,
     "mobileBoxShadowColorOpacity": null,
     "mobileBoxShadowColorPalette": null,
@@ -504,10 +518,14 @@
     "mobileMarginType": "grouped",
     "mobileMargin": 0,
     "mobileMarginTop": 10,
+    "mobileMarginRight": "auto",
     "mobileMarginBottom": 10,
+    "mobileMarginLeft": "auto",
 
     "mobileMarginSuffix": "px",
     "mobileMarginTopSuffix": "px",
-    "mobileMarginBottomSuffix": "px"
+    "mobileMarginRightSuffix": "",
+    "mobileMarginBottomSuffix": "px",
+    "mobileMarginLeftSuffix": ""
   }
 }

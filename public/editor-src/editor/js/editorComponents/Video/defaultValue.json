@@ -17,11 +17,9 @@
   },
 
   "toolbar": {
-    "tabsState": "tabNormal",
-
-    "tabsCurrentElement": "tabCurrentElement",
-
-    "tabsColor": "tabOverlay"
+    "tabsState": "",
+    "tabsCurrentElement": "",
+    "tabsColor": ""
   },
 
   "style": {
@@ -132,6 +130,8 @@
 
     "boxShadow": "off",
 
+    "tempBoxShadow": "on",
+
     "boxShadowColorHex": "#000000",
     "boxShadowColorOpacity": 1,
     "boxShadowColorPalette": "",
@@ -150,6 +150,8 @@
     "tempBoxShadowHorizontal": 1,
 
     "hoverBoxShadow": null,
+
+    "tempHoverBoxShadow": null,
 
     "hoverBoxShadowColorHex": null,
     "hoverBoxShadowColorOpacity": null,

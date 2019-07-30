@@ -2,8 +2,8 @@ import { defaultValueValue } from "visual/utils/onChange";
 import { getFontById } from "visual/utils/fonts";
 
 export function styleTypographyFontFamily({ v }) {
-  const { fontFamily } = v;
-  return getFontById(fontFamily).family;
+  const { fontFamily, fontFamilyType } = v;
+  return getFontById({ family: fontFamily, type: fontFamilyType }).family;
 }
 
 export function styleTypographyFontSize({ v, device }) {
@@ -21,3 +21,4 @@ export function styleTypographyFontWeight({ v, device }) {
 export function styleTypographyLetterSpacing({ v, device }) {
   return `${defaultValueValue({ v, key: "letterSpacing", device })}px`;
 }
+

@@ -3,7 +3,7 @@ import classnames from "classnames";
 import EditorIcon from "visual/component/EditorIcon";
 import ClickOutside from "visual/component/ClickOutside";
 import Portal from "visual/component/Portal";
-import { currentTooltip } from "visual/component/Controls/Tooltip";
+import { getCurrentTooltip } from "visual/component/Controls/Tooltip";
 import RightSidebar from "./RightSidebar";
 
 class AdvancedSettingsOptionType extends React.Component {
@@ -30,7 +30,11 @@ class AdvancedSettingsOptionType extends React.Component {
           isSidebarOpen: true
         },
         () => {
-          currentTooltip && currentTooltip.hide();
+          const tooltip = getCurrentTooltip();
+
+          if (tooltip) {
+            tooltip.reposition();
+          }
         }
       );
     }

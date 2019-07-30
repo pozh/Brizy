@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import classnames from "classnames";
 import EditorComponent from "visual/editorComponents/EditorComponent";
 import CustomCSS from "visual/component/CustomCSS";
 import EditorArrayComponent from "visual/editorComponents/EditorArrayComponent";
@@ -23,15 +24,12 @@ import { globalBlocksSelector } from "visual/redux/selectors";
 import * as toolbarConfig from "./toolbar";
 import * as toolbarExtendConfig from "./extendToolbar";
 import {
-  sectionStyleClassName,
-  bgStyleClassName,
-  bgStyleCSSVars,
-  itemsStyleClassName,
-  itemsStyleCSSVars,
-  containerStyleClassName,
-  containerStyleCSSVars,
-  sectionStyleCSSVars
+  styleCloseButton,
+  styleBg,
+  styleContainer,
+  styleContainerWrap
 } from "./styles";
+import { css } from "visual/utils/cssStyle";
 import defaultValue from "./defaultValue.json";
 import { tabletSyncOnChange, mobileSyncOnChange } from "visual/utils/onChange";
 
@@ -183,10 +181,40 @@ class SectionPopup extends EditorComponent {
     );
   }
 
-  renderItems(v) {
-    const { bgImageSrc, bgColorOpacity, bgPopulation } = v;
+  renderItems(v, vs) {
+    const { containerClassName, bgImageSrc, bgColorOpacity, bgPopulation } = v;
+
+    const classNameBg = classnames(
+      "brz-popup__inner",
+      "brz-d-xs-flex",
+      "brz-flex-xs-wrap",
+      "brz-align-items-xs-center",
+      css(
+        `${this.constructor.componentId}-Bg`,
+        `${this.getId()}-Bg`,
+        styleBg(vs, v)
+      )
+    );
+    const classNameContainer = classnames(
+      "brz-container",
+      containerClassName,
+      css(
+        `${this.constructor.componentId}-container`,
+        `${this.getId()}-container`,
+        styleContainer(vs, v)
+      )
+    );
+    const classNameContainerWrap = classnames(
+      "brz-container__wrap",
+      css(
+        `${this.constructor.componentId}-containerWrap`,
+        `${this.getId()}-containerWrap`,
+        styleContainerWrap(vs, v)
+      )
+    );
+
     let bgProps = {
-      className: bgStyleClassName(v),
+      className: classNameBg,
       imageSrc: bgImageSrc || bgPopulation,
       colorOpacity: bgColorOpacity,
       tabletImageSrc: tabletSyncOnChange(v, "bgImageSrc"),
@@ -208,8 +236,8 @@ class SectionPopup extends EditorComponent {
     return (
       <Background {...bgProps}>
         <SortableZIndex zindex={1}>
-          <div className={containerStyleClassName(v)}>
-            <div className={itemsStyleClassName(v)}>
+          <div className={classNameContainerWrap}>
+            <div className={classNameContainer}>
               <EditorArrayComponent {...itemsProps} />
             </div>
           </div>
@@ -218,31 +246,42 @@ class SectionPopup extends EditorComponent {
     );
   }
 
-  renderForEdit(v) {
+  renderForEdit(v, vs) {
     if (!this.state.isOpened) {
       return null;
     }
 
+    const { className, customClassName } = v;
+
     const id = this.getId();
-    const styles = {
-      ...sectionStyleCSSVars(v),
-      ...bgStyleCSSVars(v),
-      ...itemsStyleCSSVars(v),
-      ...containerStyleCSSVars(v)
-    };
+
+    const classNameClose = classnames(
+      "brz-popup",
+      "brz-popup__editor",
+      { "brz-popup--opened": this.state.isOpened },
+      className,
+      customClassName,
+      css(
+        `${this.constructor.componentId}-close`,
+        `${this.getId()}-close`,
+        styleCloseButton(vs, v)
+      )
+    );
 
     return ReactDOM.createPortal(
       <CustomCSS selectorName={id} css={v.customCSS}>
         <div
           id={id}
-          className={sectionStyleClassName(v, this.state)}
-          style={styles}
+          className={classNameClose}
           data-block-id={this.props.blockId}
         >
           <div className="brz-popup__close" onClick={this.handleDropClick}>
             <ThemeIcon name="close-popup" type="editor" />
           </div>
-          <Roles allow={["admin"]} fallbackRender={() => this.renderItems(v)}>
+          <Roles
+            allow={["admin"]}
+            fallbackRender={() => this.renderItems(v, vs)}
+          >
             <ContainerBorder
               ref={this.containerBorderRef}
               borderStyle="none"
@@ -252,7 +291,7 @@ class SectionPopup extends EditorComponent {
               path={this.getPath()}
             >
               {this.renderToolbar(v)}
-              {this.renderItems(v)}
+              {this.renderItems(v, vs)}
             </ContainerBorder>
           </Roles>
         </div>
@@ -261,17 +300,28 @@ class SectionPopup extends EditorComponent {
     );
   }
 
-  renderForView(v) {
+  renderForView(v, vs) {
+    const { className, customClassName } = v;
+
+    const classNameClose = classnames(
+      "brz-popup",
+      "brz-popup__preview",
+      className,
+      customClassName,
+      css(
+        `${this.constructor.componentId}-close`,
+        `${this.getId()}-close`,
+        styleCloseButton(vs, v)
+      )
+    );
+
     return (
       <CustomCSS selectorName={this.getId()} css={v.customCSS}>
-        <div
-          className={sectionStyleClassName(v, this.state)}
-          data-brz-popup={this.instanceKey}
-        >
+        <div className={classNameClose} data-brz-popup={this.instanceKey}>
           <div className="brz-popup__close">
             <ThemeIcon name="close-popup" type="editor" />
           </div>
-          {this.renderItems(v)}
+          {this.renderItems(v, vs)}
         </div>
       </CustomCSS>
     );

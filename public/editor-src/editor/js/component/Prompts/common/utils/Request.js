@@ -12,6 +12,7 @@ const parseJSON = response => {
   return response
     .json()
     .then(json => ({
+      ...json,
       status: response.status,
       ok: response.ok,
       data: json.data || null
@@ -25,15 +26,21 @@ const parseJSON = response => {
 };
 
 const request = _options => {
-  const { queryParams, url, contentType, ...options } = _options;
-  const headers = new Headers({
+  const {
+    headers = true,
+    queryParams,
+    url,
+    contentType,
+    ...options
+  } = _options;
+  const header = new Headers({
     "Content-Type": contentType || "application/json; charset=utf-8"
   });
   const requestUrl = makeUrl(url, queryParams);
 
   return fetch(requestUrl, {
-    headers,
     credentials: "same-origin",
+    ...(headers ? { headers: header } : {}),
     ...options
   })
     .then(parseJSON)

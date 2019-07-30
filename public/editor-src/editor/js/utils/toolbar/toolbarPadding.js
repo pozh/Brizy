@@ -9,6 +9,7 @@ export function toolbarPadding({
   v,
   device,
   state,
+  devices = "all",
   position = 50,
   onChangeGrouped,
   onChangeUngrouped
@@ -16,6 +17,7 @@ export function toolbarPadding({
   return {
     id: "padding",
     type: "multiPicker",
+    devices,
     position,
     picker: {
       id: defaultValueKey({ key: "paddingType", device, state }),

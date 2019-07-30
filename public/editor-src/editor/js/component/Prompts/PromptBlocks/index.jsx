@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import _ from "underscore";
 import classnames from "classnames";
 import Fixed from "visual/component/Prompts/Fixed";
 import EditorIcon from "visual/component/EditorIcon";
@@ -10,7 +11,7 @@ import Blocks from "./Blocks";
 import Saved from "./Saved";
 import Global from "./Global";
 
-const tabs = [
+const TABS = [
   {
     id: "templates",
     title: t("Layouts"),
@@ -38,6 +39,12 @@ const tabs = [
 ];
 
 class PromptBlocks extends Component {
+  static defaultProps = {
+    tabs: {},
+    tabProps: {},
+    onClose: _.noop
+  };
+
   state = {
     currentTab: "blocks"
   };
@@ -46,60 +53,60 @@ class PromptBlocks extends Component {
     this.setState({ currentTab: tabId });
   }
 
-  renderHeader() {
+  renderTabs() {
     const { currentTab } = this.state;
-    const { filterUI, onClose } = this.props;
-    const className = classnames("brz-ed-popup-two-header__tabs", {
-      "brz-ed-popup-two-header__tabs-fullWidth": filterUI && !filterUI.search
-    });
-    const headerTabs = tabs
-      .filter(tab => {
-        const { shouldRender } = tab.component;
-
-        return (
-          typeof shouldRender === "undefined" ||
-          (typeof shouldRender === "function" && shouldRender(this.props))
-        );
-      })
-      .map(tab => {
-        const className = classnames("brz-ed-popup-two-tab-item", {
-          "brz-ed-popup-two-tab-item-active": tab.id === currentTab
-        });
-
-        return (
-          <div
-            key={tab.id}
-            className={className}
-            onClick={() => this.handleTabChange(tab.id)}
-          >
-            <div className="brz-ed-popup-two-tab-icon">
-              <EditorIcon icon={tab.icon} />
-            </div>
-            <div className="brz-ed-popup-two-tab-name">{tab.title}</div>
-          </div>
-        );
+    const { tabs, onClose } = this.props;
+    const headerTabs = TABS.filter(tab => tabs[tab.id] !== false).map(tab => {
+      const className = classnames("brz-ed-popup-two-tab-item", {
+        "brz-ed-popup-two-tab-item-active": tab.id === currentTab
       });
+
+      return (
+        <div
+          key={tab.id}
+          className={className}
+          onClick={() => this.handleTabChange(tab.id)}
+        >
+          <div className="brz-ed-popup-two-tab-icon">
+            <EditorIcon icon={tab.icon} />
+          </div>
+          <div className="brz-ed-popup-two-tab-name">{tab.title}</div>
+        </div>
+      );
+    });
 
     return (
       <div className="brz-ed-popup-two-header">
         <div id="brz-ed-popup-header-left-slot" />
-        <div className={className}>{headerTabs}</div>
+        <div className="brz-ed-popup-two-header__tabs">{headerTabs}</div>
         <div className="brz-ed-popup-two-btn-close" onClick={onClose} />
       </div>
     );
   }
 
-  render() {
+  renderContent() {
+    const { tabProps, onClose } = this.props;
     const { currentTab } = this.state;
-    const Content = tabs.find(tab => tab.id === currentTab).component;
+    const Content = TABS.find(tab => tab.id === currentTab).component;
+    const contentProps = tabProps[currentTab];
 
     return (
-      <Fixed onClose={this.props.onClose}>
+      <Content
+        onClose={onClose}
+        HeaderSlotLeft={HeaderSlotLeft}
+        {...contentProps}
+      />
+    );
+  }
+
+  render() {
+    const { onClose } = this.props;
+
+    return (
+      <Fixed onClose={onClose}>
         <div className="brz-ed-popup-two-wrapper brz-ed-popup-two-blocks">
-          {this.renderHeader()}
-          <div className="brz-ed-popup-two-body">
-            <Content {...this.props} HeaderSlotLeft={HeaderSlotLeft} />
-          </div>
+          {this.renderTabs()}
+          <div className="brz-ed-popup-two-body">{this.renderContent()}</div>
         </div>
       </Fixed>
     );

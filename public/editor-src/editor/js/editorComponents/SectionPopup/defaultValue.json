@@ -13,12 +13,25 @@
     "bgPositionX": 50,
     "bgPopulation": "",
 
+    "hoverMedia": null,
+
+    "hoverBgImageWidth": null,
+    "hoverBgImageHeight": null,
+    "hoverBgImageSrc": null,
+    "hoverBgPositionY": null,
+    "hoverBgPositionX": null,
+    "hoverBgPopulation": null,
+
+    "tabletMedia": null,
+
     "tabletBgImageWidth": null,
     "tabletBgImageHeight": null,
     "tabletBgImageSrc": null,
     "tabletBgPositionX": null,
     "tabletBgPositionY": null,
     "tabletBgPopulation": null,
+
+    "mobileMedia": null,
 
     "mobileBgImageWidth": null,
     "mobileBgImageHeight": null,
@@ -29,11 +42,9 @@
   },
 
   "toolbar": {
-    "tabsState": "tabNormal",
-
-    "tabsCurrentElement": "tabCurrentElement",
-
-    "tabsColor": "tabOverlay"
+    "tabsState": "",
+    "tabsCurrentElement": "",
+    "tabsColor": ""
   },
 
   "style": {
@@ -66,6 +77,7 @@
     "tempBorderBottomLeftRadius": 0,
 
     "bgColorType": "solid",
+    "tempBgColorType": "solid",
 
     "gradientActivePointer": "startPointer",
     "gradientStartPointer": 0,
@@ -97,13 +109,6 @@
     "tempColorOpacity": 1,
     "tempColorPalette": "color3",
 
-    "hoverColorHex": "#239ddb",
-    "hoverColorOpacity": 0.8,
-    "hoverColorPalette": "color3",
-
-    "tempHoverColorOpacity": 1,
-    "tempHoverColorPalette": "color3",
-
     "borderColorHex": "#66738d",
     "borderColorOpacity": 0,
     "borderColorPalette": "",
@@ -115,6 +120,39 @@
     "containerSize": 100,
 
     "customCSS": "",
+
+    "hoverBgColorType": null,
+    "tempHoverBgColorType": null,
+
+    "hoverGradientActivePointer": null,
+    "hoverGradientStartPointer": null,
+    "hoverGradientFinishPointer": null,
+
+    "hoverGradientType": null,
+
+    "hoverGradientLinearDegree": null,
+    "hoverGradientRadialDegree": null,
+
+    "hoverBgColorHex": null,
+    "hoverBgColorOpacity": null,
+    "hoverBgColorPalette": null,
+
+    "tempHoverBgColorOpacity": null,
+    "tempHoverBgColorPalette": null,
+
+    "hoverGradientColorHex": null,
+    "hoverGradientColorOpacity": null,
+    "hoverGradientColorPalette": null,
+
+    "tempHoverGradientColorOpacity": null,
+    "tempHoverGradientColorPalette": null,
+
+    "hoverColorHex": "#239ddb",
+    "hoverColorOpacity": 0.8,
+    "hoverColorPalette": "color3",
+
+    "tempHoverColorOpacity": 1,
+    "tempHoverColorPalette": "color3",
 
     "tabletBorderRadius": null,
     "tabletBorderTopLeftRadius": null,

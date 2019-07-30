@@ -6,7 +6,8 @@ import BoxResizer from "visual/component/BoxResizer";
 import Placeholder from "visual/component/Placeholder";
 import Toolbar from "visual/component/Toolbar";
 import * as toolbarConfig from "./toolbar";
-import { styleClassName, styleCSSVars } from "./styles";
+import { css } from "visual/utils/cssStyle";
+import { style } from "./styles";
 import defaultValue from "./defaultValue.json";
 
 const resizerPoints = [
@@ -26,28 +27,6 @@ class SoundCloud extends EditorComponent {
   }
 
   static defaultValue = defaultValue;
-
-  mounted = false;
-
-  componentDidMount() {
-    this.mounted = true;
-  }
-
-  componentWillUnmount() {
-    this.mounted = false;
-  }
-
-  handleToolbarClose = () => {
-    if (!this.mounted) {
-      return;
-    }
-
-    this.patchValue({
-      tabsState: "tabNormal",
-      tabsCurrentElement: "tabCurrentElement",
-      tabsColor: "tabBorder"
-    });
-  };
 
   handleResizerChange = patch => this.patchValue(patch);
 
@@ -80,7 +59,11 @@ class SoundCloud extends EditorComponent {
     };
   }
 
-  renderForEdit(v) {
+  renderForEdit(v, vs) {
+    const className = classnames(
+      "brz-soundcloud",
+      css(`${this.constructor.componentId}`, `${this.getId()}`, style(vs, v))
+    );
     const wrapperClassName = classnames("brz-iframe", {
       "brz-blocked": IS_EDITOR
     });
@@ -103,12 +86,9 @@ class SoundCloud extends EditorComponent {
     );
 
     return (
-      <Toolbar
-        {...this.makeToolbarPropsFromConfig(toolbarConfig)}
-        onClose={this.handleToolbarClose}
-      >
+      <Toolbar {...this.makeToolbarPropsFromConfig(toolbarConfig)}>
         <CustomCSS selectorName={this.getId()} css={v.customCSS}>
-          <div className={styleClassName(v)} style={styleCSSVars(v)}>
+          <div className={className}>
             <BoxResizer
               points={resizerPoints}
               restrictions={this.getResizerRestrictions(v)}

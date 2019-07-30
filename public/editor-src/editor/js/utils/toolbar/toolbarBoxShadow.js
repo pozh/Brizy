@@ -1,3 +1,4 @@
+import { t } from "visual/utils/i18n";
 import { getOptionColorHexByPalette } from "visual/utils/options";
 import {
   defaultValueKey,
@@ -401,5 +402,224 @@ export function toolbarBoxShadow({ v, device, state }) {
         state
       })]: boxShadowHorizontal
     })
+  };
+}
+
+//boxshadow
+
+export function toolbarBoxShadow2({
+  v,
+  device,
+  state,
+  choices = "all",
+  onChangeHex,
+  onChangePalette,
+  onChangeStyle,
+  showSelect = true
+}) {
+  const { hex } = getOptionColorHexByPalette(
+    defaultValueValue({ v, key: "boxShadowColorHex", device, state }),
+    defaultValueValue({ v, key: "boxShadowColorPalette", device, state })
+  );
+
+  const boxShadowColorHexAndOpacityAndPaletteAndStateKey = defaultValueKey({
+    key: "boxShadowColorHexAndOpacityAndPaletteAndState",
+    device,
+    state
+  });
+  const boxShadowStateValue = defaultValueValue({
+    v,
+    key: "boxShadow",
+    device,
+    state
+  });
+
+  const boxShadowColorOpacityValue = defaultValueValue({
+    v,
+    key: "boxShadowColorOpacity",
+    device,
+    state
+  });
+  const boxShadowColorPaletteValue = defaultValueValue({
+    v,
+    key: "boxShadowColorPalette",
+    device,
+    state
+  });
+
+  const choicesAll = [
+    {
+      title: t("None"),
+      value: ""
+    },
+    {
+      title: t("Inset"),
+      value: "inset"
+    },
+    {
+      title: t("Outline"),
+      value: "on"
+    }
+  ];
+
+  const choicesInset = [
+    {
+      title: t("None"),
+      value: ""
+    },
+    {
+      title: t("Inset"),
+      value: "inset"
+    }
+  ];
+
+  const choicesOutline = [
+    {
+      title: t("None"),
+      value: ""
+    },
+    {
+      title: t("Outline"),
+      value: "on"
+    }
+  ];
+
+  return {
+    id: boxShadowColorHexAndOpacityAndPaletteAndStateKey,
+    type: "colorPicker2",
+    select: {
+      choices:
+        choices === "all"
+          ? choicesAll
+          : choices === "inset"
+          ? choicesInset
+          : choicesOutline
+    },
+    value: {
+      hex,
+      opacity: boxShadowColorOpacityValue,
+      palette: boxShadowColorPaletteValue,
+      select: boxShadowStateValue
+    },
+    onChange: ({
+      hex,
+      opacity,
+      palette,
+      select: style,
+      isChanged,
+      opacityDragEnd
+    }) => {
+      const values = {
+        ...{
+          v,
+          device,
+          state,
+          onChange:
+            isChanged === "select"
+              ? onChangeStyle
+              : isChanged === "hex" || isChanged === "opacity"
+              ? onChangeHex
+              : onChangePalette
+        },
+        ...{ v, hex, opacity, palette, style, isChanged, opacityDragEnd }
+      };
+
+      return saveOnChanges(values);
+    }
+  };
+}
+
+export function toolbarBoxShadowHexField2({ v, device, state, onChange }) {
+  const { hex } = getOptionColorHexByPalette(
+    defaultValueValue({ v, key: "boxShadowColorHex", device, state }),
+    defaultValueValue({ v, key: "boxShadowColorPalette", device, state })
+  );
+
+  return {
+    id: defaultValueKey({ key: "boxShadowColorFields", device, state }),
+    type: "colorFields",
+    value: {
+      hex,
+      opacity: defaultValueValue({
+        v,
+        key: "boxShadowColorOpacity",
+        device,
+        state
+      })
+    },
+    onChange: ({ hex }) => {
+      const values = {
+        ...{ v, device, state, onChange },
+        ...{ hex }
+      };
+
+      return saveOnChanges(values);
+    }
+  };
+}
+
+export function toolbarBoxShadowFields2({ v, device, state, onChange }) {
+  const boxShadowStateValue = defaultValueValue({
+    v,
+    key: "boxShadow",
+    device,
+    state
+  });
+  const boxShadowBlurValue = defaultValueValue({
+    v,
+    key: "boxShadowBlur",
+    device,
+    state
+  });
+  const boxShadowSpreadValue = defaultValueValue({
+    v,
+    key: "boxShadowSpread",
+    device,
+    state
+  });
+  const boxShadowVerticalValue = defaultValueValue({
+    v,
+    key: "boxShadowVertical",
+    device,
+    state
+  });
+  const boxShadowHorizontalValue = defaultValueValue({
+    v,
+    key: "boxShadowHorizontal",
+    device,
+    state
+  });
+
+  return {
+    id: defaultValueKey({ key: "boxShadow", device, state }),
+    type: "multiInput",
+    config: {
+      defaultIcon: ["nc-shadow"],
+      icons: ["nc-blur", "nc-size", "nc-vertical", "nc-horizontal"]
+    },
+    value: [
+      boxShadowBlurValue,
+      boxShadowSpreadValue,
+      boxShadowVerticalValue,
+      boxShadowHorizontalValue
+    ],
+    onChange: ([
+      boxShadowBlur,
+      boxShadowSpread,
+      boxShadowVertical,
+      boxShadowHorizontal
+    ]) => {
+      const values = {
+        ...{ v, device, state, onChange },
+        ...{
+          boxShadowBlur,
+          boxShadowSpread,
+          boxShadowVertical,
+          boxShadowHorizontal
+        }
+      };
+
+      return saveOnChanges(values);
+    }
   };
 }

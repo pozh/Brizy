@@ -31,7 +31,8 @@ const getBlockTag = value => {
 const getFont = (value, settings) => {
   return {
     font: String(value),
-    desktopWeight: String(getWeight(settings.weight, value))
+    fontType: settings.type,
+    desktopWeight: String(getWeight(settings.weight, settings.weights))
   };
 };
 
@@ -106,6 +107,7 @@ const getItemsForDesktop = (
     colorPalette,
     tagName,
     font,
+    fontType,
     fontStyle,
     height,
     intermediateTabletHeight,
@@ -168,10 +170,10 @@ const getItemsForDesktop = (
                   id: "font",
                   type: "fontFamily",
                   value: font,
-                  onChange: ({ id }) => {
+                  onChange: ({ id, weights, type }) => {
                     const mewFont = getDesktopFontStyles(
                       fontStyle,
-                      getFont(id, { font, weight })
+                      getFont(id, { type, font, weight, weights })
                     );
 
                     let newWeight = {};
@@ -218,6 +220,7 @@ const getItemsForDesktop = (
                             onChange({
                               fontStyle: value.toLowerCase(),
                               font: null,
+                              fontType: null,
                               desktopSize: null,
                               desktopHeight: null,
                               desktopWeight: null,
@@ -366,7 +369,10 @@ const getItemsForDesktop = (
                           label: t("Weight"),
                           type: "select",
                           display: "block",
-                          choices: getWeightChoices(font).map(item => ({
+                          choices: getWeightChoices({
+                            family: font,
+                            type: fontType
+                          }).map(item => ({
                             ...item,
                             value: String(item.value)
                           })),
@@ -680,11 +686,11 @@ const getItemsForDesktop = (
             {
               id: "popup",
               label: t("Popup"),
-              disabled: !proEnabled || inPopup,
               options: [
                 {
                   id: "linkPopup",
                   type: "promptAddPopup",
+                  disabled: !proEnabled || inPopup,
                   label: t("Popup"),
                   popupKey: `${component.getId()}_${linkPopup}`,
                   value: {
@@ -871,6 +877,7 @@ export const getItemsForTablet = (
     linkPopup,
     horizontalAlign,
     font,
+    fontType,
     height,
     letterSpacing,
     weight,
@@ -939,10 +946,12 @@ export const getItemsForTablet = (
                 label: t("Weight"),
                 type: "select",
                 display: "block",
-                choices: getWeightChoices(font).map(item => ({
-                  ...item,
-                  value: String(item.value)
-                })),
+                choices: getWeightChoices({ family: font, type: fontType }).map(
+                  item => ({
+                    ...item,
+                    value: String(item.value)
+                  })
+                ),
                 value: String(weight),
                 onChange: value =>
                   onChange({
@@ -1112,6 +1121,7 @@ export const getItemsForMobile = (
     linkPopup,
     horizontalAlign,
     font,
+    fontType,
     height,
     letterSpacing,
     weight,
@@ -1180,10 +1190,12 @@ export const getItemsForMobile = (
                 label: t("Weight"),
                 type: "select",
                 display: "block",
-                choices: getWeightChoices(font).map(item => ({
-                  ...item,
-                  value: String(item.value)
-                })),
+                choices: getWeightChoices({ family: font, type: fontType }).map(
+                  item => ({
+                    ...item,
+                    value: String(item.value)
+                  })
+                ),
                 value: String(weight),
                 onChange: value =>
                   onChange({

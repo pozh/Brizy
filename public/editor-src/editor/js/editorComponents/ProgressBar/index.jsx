@@ -25,13 +25,7 @@ class ProgressBar extends EditorComponent {
 
   handleResizerChange = patch => this.patchValue(patch);
 
-  renderForEdit(_v, vs) {
-    const v = this.applyRulesToValue(_v, [
-      _v.fontStyle && `${_v.fontStyle}__fsDesktop`,
-      _v.tabletFontStyle && `${_v.tabletFontStyle}__fsTablet`,
-      _v.mobileFontStyle && `${_v.mobileFontStyle}__fsMobile`
-    ]);
-
+  renderForEdit(v, vs) {
     const classNameBg = classnames(
       "brz-progress-bar",
       css(
